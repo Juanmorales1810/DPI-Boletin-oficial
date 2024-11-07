@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
+
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Ubuntu } from 'next/font/google'
+import AppProvider from "./provider";
+import type { Metadata } from "next";
+import "./globals.css";
 
 const ubuntu = Ubuntu({
   subsets: ["latin"],
@@ -27,11 +28,13 @@ export default function RootLayout({
       <body
         className={`${ubuntu.variable}  antialiased bg-gris20`}
       >
-        <Navbar />
-        <main className="min-h-[calc(100vh-304px)]">
-          {children}
-        </main>
-        <Footer />
+        <AppProvider>
+          <Navbar />
+          <main className="min-h-[calc(100vh-304px)]">
+            {children}
+          </main>
+          <Footer />
+        </AppProvider>
       </body>
     </html>
   );
