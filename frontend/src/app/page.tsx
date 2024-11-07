@@ -1,5 +1,6 @@
 "use client";
 
+import SubirArchivo from "@/components/subirArchivo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,7 +42,7 @@ export default function Home() {
             <SelectTrigger className="bg-naranjaPrincipal text-white">
               <SelectValue placeholder="Seleccione tipo de documento" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-naranjaClaro">
               <SelectItem value="juridico">Juridico</SelectItem>
               <SelectItem value="otro">Otro</SelectItem>
             </SelectContent>
@@ -50,9 +51,14 @@ export default function Home() {
       </div>
       {
         tipoDocumento === "juridico" && (
-          <Button className="bg-naranjaPrincipal text-white">
-            <span className="text-xl font-bold">Generar boletín</span>
-          </Button>
+          <SubirArchivo
+            disabled={false}
+            id="acta_constitutiva"
+            checkbox={false}
+            // apiSlice={postArchivo}
+            nombreSA={"nombreSA"}
+            pathArchivo={"archivo?.path_arch"}
+          />
         )
       }
     </section>
