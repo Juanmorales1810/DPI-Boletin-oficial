@@ -1,9 +1,11 @@
 "use client";
 
 import SubirArchivo from "@/components/subirArchivo";
+import TextEditor from "@/components/textEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Loader from "@/components/ui/loader";
 import {
   Select,
   SelectContent,
@@ -12,7 +14,6 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
 
 import { useState } from "react";
 
@@ -43,14 +44,23 @@ export default function Home() {
               <SelectValue placeholder="Seleccione tipo de documento" />
             </SelectTrigger>
             <SelectContent className="bg-naranjaClaro">
-              <SelectItem value="juridico">Juridico</SelectItem>
+              <SelectItem value="leyes">Leyes</SelectItem>
+              <SelectItem value="decretos">Decretos</SelectItem>
+              <SelectItem value="normas">Normas</SelectItem>
+              <SelectItem value="ordenanzas">Ordenanzas</SelectItem>
+              <SelectItem value="notificaciones">Notificaciones(edictos)</SelectItem>
+              <SelectItem value="licitaciones">Licitaciones</SelectItem>
+              <SelectItem value="convocatorias">Convocatorias</SelectItem>
               <SelectItem value="otro">Otro</SelectItem>
             </SelectContent>
           </Select>
+          <Button className="bg-naranjaPrincipal text-white w-24 ml-auto">
+            Siguiente
+          </Button>
         </div>
       </div>
       {
-        tipoDocumento === "juridico" && (
+        tipoDocumento === "notificaciones" ? (
           <SubirArchivo
             disabled={false}
             id="acta_constitutiva"
@@ -59,8 +69,11 @@ export default function Home() {
             nombreSA={"nombreSA"}
             pathArchivo={"archivo?.path_arch"}
           />
+        ) : (
+          <TextEditor />
         )
       }
+      <Loader color="F2f2f2" size="24px" speed="1s" />
     </section>
   );
 }
