@@ -11,8 +11,8 @@ const config: Config = {
         extend: {
             colors: {
                 naranjaPrincipal: "#EC6608",
-                naranjaClaro: "#C07120",
-                naranjaOscuro: "#F4AF51",
+                naranjaClaro: "#F4AF51",
+                naranjaOscuro: "#C07120",
                 naranja10: "#FCD6AD",
                 grisPrincipal: "#413E43",
                 gris80: "#6F7B7E",
