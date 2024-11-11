@@ -1,10 +1,11 @@
 
+import AppProvider from "@/components/provider";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import { Ubuntu } from 'next/font/google'
-import AppProvider from "./provider";
 import type { Metadata } from "next";
-import "./globals.css";
+
+import "@/style/globals.css"
 
 const ubuntu = Ubuntu({
   subsets: ["latin"],
@@ -26,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body
-        className={`${ubuntu.variable}  antialiased bg-gris20`}
+        className={`${ubuntu.variable} font-[family-name:var(--font-ubuntu)] antialiased bg-gris20`}
       >
         <AppProvider>
           <Navbar />
