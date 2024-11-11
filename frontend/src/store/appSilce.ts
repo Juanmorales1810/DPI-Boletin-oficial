@@ -1,72 +1,84 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState = {
-    sociedadAnonima: {
-        nombreSA: "",
-        actividad: "",
-        tipoSA: "",
-        cuit: "",
-        direccion: "",
-        correoElectronico: "",
-        telefono: "",
-        estados: [
-            {
-                fecha: "",
-                estado: "",
-                observaciones: "",
-            },
-        ],
-        criterios: {
-            acta_constitutiva: [],
-            asamblea_miembros: [],
-            lugar_asambleas: [],
-        },
+interface BoletinOficialState {
+    nombre: string;
+    apellido: string;
+    tipoBoletin: string;
+    contenido: string;
+}
+
+interface RootState {
+    boletinOficial: BoletinOficialState;
+}
+
+const initialState: RootState = {
+    boletinOficial: {
+        nombre: "",
+        apellido: "",
+        tipoBoletin: "",
+        contenido: "",
     },
 };
 
-export const SociedadStore = createSlice({
-    name: "sociedadAnonima",
+export const BoletinStore = createSlice({
+    name: "boletinOficial",
     initialState,
     reducers: {
-        cargarSociedad: (state, action) => {
-            state.sociedadAnonima = {
-                ...initialState.sociedadAnonima,
+        cargarBoletin: (
+            state,
+            action: PayloadAction<Partial<BoletinOficialState>>
+        ) => {
+            state.boletinOficial = {
+                ...state.boletinOficial,
                 ...action.payload,
             };
         },
         cargarSubdocumentoSociedad: (
             state,
-            action: {
-                payload: {
-                    subdoc: keyof typeof initialState.sociedadAnonima;
-                    field: string;
-                    value: any;
-                };
-            }
+            action: PayloadAction<{
+                subdoc: keyof BoletinOficialState;
+                field: string;
+                value: any;
+            }>
         ) => {
             const { subdoc, field, value } = action.payload;
-            (state.sociedadAnonima[subdoc] as any)[field] = value;
+            (state.boletinOficial[subdoc] as any)[field] = value;
         },
     },
 });
 
-export const { cargarSociedad, cargarSubdocumentoSociedad } =
-    SociedadStore.actions;
+export const { cargarBoletin, cargarSubdocumentoSociedad } =
+    BoletinStore.actions;
+
+interface PersonaState {
+    usuario: {
+        nombre: string;
+        apellido: string;
+        empresa: string;
+        login: string;
+        clave: string;
+        auth: boolean;
+    };
+}
+const initialPersonaState: PersonaState = {
+    usuario: {
+        nombre: "",
+        apellido: "",
+        empresa: "",
+        login: "",
+        clave: "",
+        auth: false,
+    },
+};
 
 export const personaSlice = createSlice({
     name: "persona",
-    initialState: {
-        usuario: {
-            nombre: "",
-            apellido: "",
-            empresa: "",
-            login: "",
-            clave: "",
-            auth: false,
-        },
-    },
+    initialState: initialPersonaState,
     reducers: {
-        actualizarUsuario: (state, action) => {
+        actualizarUsuario: (
+            state,
+            action: PayloadAction<Partial<PersonaState["usuario"]>>
+        ) => {
             state.usuario = { ...state.usuario, ...action.payload };
         },
     },
