@@ -1,12 +1,12 @@
 import { pdfSchema } from "@/validations/validationFile";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { cargarSociedad } from "@/store/appSilce";
+import { cargarBoletin } from "@/store/appSilce";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
+import { UploadIcon } from "./icons";
 import Loader from "./ui/loader";
 import { useState } from "react";
 import { toast } from "sonner";
-import { UploadIcon } from "./icons";
 
 interface SubirArchivoProps {
     checkbox?: boolean;
@@ -55,7 +55,7 @@ export default function SubirArchivo(props: SubirArchivoProps) {
                         padding: "16px",
                     },
                 });
-            dispatch(cargarSociedad({ ...response.sa }));
+            dispatch(cargarBoletin({ ...response.sa }));
         } catch (error: any) {
             console.error("Error en el envio: ", error);
             const errorMessage =
