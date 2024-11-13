@@ -31,12 +31,20 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { CompraIcon } from './icons';
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from '@/store/store';
+import { usePostBoletinOficialMutation } from '@/store/apiSlice';
+import { toast } from 'sonner';
+import { cargarBoletin } from '@/store/appSilce';
 
 
 export default function TextEditor() {
+    const boletin = useSelector((state: RootState) => state.novedad.boletinOficial);
+    const [postBoletin] = usePostBoletinOficialMutation();
     const editorRef = useRef(null);
     const editorInstanceRef = useRef<Editor | null>(null);
     const [count, setCount] = useState(0);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         if (editorRef.current) {
@@ -139,13 +147,47 @@ export default function TextEditor() {
         editorInstanceRef.current?.chain().focus().setHorizontalRule().run();
     }
 
-
+    const onSubmit = async () => {
+        const data = {
+            ...boletin,
+            contenido: JSON.stringify(editorInstanceRef.current?.getJSON(), null, 2)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;"),
+            precio: count * 8,
+            fechaPublicacion: new Date(boletin.fechaPublicacion),
+        };
+        try {
+            const response = await postBoletin({ data }).unwrap();
+            console.log("Desde el envio: ", response);
+            if (response?.message)
+                toast.success(response.message, {
+                    richColors: true,
+                    style: {
+                        padding: "16px",
+                    },
+                });
+            dispatch(cargarBoletin({ ...response.sa }));
+            // response?.sa.forma_constitutiva === "dinerario"
+            //     ? navigate("/constitucion-con-aportes-dinerarios")
+            //     : navigate("/constitucion-con-aportes-no-dinerarios");
+        } catch (error: any) {
+            console.error("Error en el envio: ", error);
+            toast.error(error.data?.detail, {
+                richColors: true,
+                style: {
+                    padding: "16px",
+                },
+            });
+        }
+        console.log(data);
+    };
 
     return (
-        <div className='flex gap-4 justify-center items-start px-20'>
-            <div className='w-full max-w-5xl mx-auto py-6'>
+        <div className='flex gap-4 justify-center items-start '>
+            <div className='w-full mx-auto py-6'>
                 <div className="flex flex-col justify-center items-center w-full">
-                    <div className="w-full px-3 py-2 border-b dark:border-zinc-700 rounded-t-lg bg-gris50 dark:bg-zinc-900">
+                    <div className="w-full px-3 py-2 border-b dark:border-zinc-700 rounded-t-lg bg-gris50 dark:bg-zinc-900 sticky top-20 z-50">
                         <div className="flex flex-wrap items-center">
                             <div className="flex items-center space-x-1 rtl:space-x-reverse flex-wrap">
                                 <ToggleGroup type="multiple">
@@ -363,14 +405,6 @@ export default function TextEditor() {
                     <div className="w-full px-4 py-2 bg-white rounded-b-lg min-h-96 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 shadow-xl dark:shadow-none">
                         <div ref={editorRef} id="wysiwyg-example" className="block w-full px-0 text-zinc-800 bg-white border-0 dark:bg-zinc-800 focus:ring-0 dark:text-white dark:placeholder-zinc-400 max-w-5xl"></div>
                     </div>
-                    <Button
-                        form='form-card'
-                        type='submit'
-                        // onClick={saveContent}
-                        className="py-2 text-sm font-semibold text-white bg-naranjaPrincipal hover:bg-naranjaClaro rounded-b-lg mt-6 mx-auto"
-                    >
-                        Guardar contenido
-                    </Button>
                 </div>
             </div>
             <div className='flex flex-col justify-center items-center w-full max-w-lg bg-white rounded-lg space-y-4 my-6 px-8 py-6 sticky top-20 shadow-md'>
@@ -383,7 +417,7 @@ export default function TextEditor() {
                     <p className='py-2 px-6 bg-gris50 rounded-md text-gris80 min-w-24 text-center'>{count}</p>
                 </div>
                 <div className='flex justify-between items-center gap-4 w-full max-w-72'>
-                    <button className='bg-gris80 text-white py-2 px-6 rounded-md flex justify-center items-center gap-2 flex-1'>
+                    <button onClick={onSubmit} className='bg-gris80 text-white py-2 px-6 rounded-md flex justify-center items-center gap-2 flex-1'>
                         <CompraIcon />
                         Pagar
                     </button>
