@@ -9,8 +9,8 @@ Este repositorio contiene un proyecto con un backend en Python (usando FastAPI) 
 ## Tecnologías
 
 -   Backend:
-    -   Python (versión 3.7)
-    -   FastAPI (versión 0.70.0)
+    -   Python (versión 3.12.4)
+    -   FastAPI (versión 0.115.5)
     -   SQLite (versión 3.35.5)
     -   uvicorn (versión 0.15.0)
 -   Frontend:
