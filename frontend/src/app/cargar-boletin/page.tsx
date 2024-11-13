@@ -8,10 +8,8 @@ import SubirArchivo from '@/components/subirArchivo';
 export default function Carga() {
     const boletin = useSelector((state: RootState) => state.novedad.boletinOficial);
     return (
-        <section>
-            {boletin.tipoBoletin === "notificaciones" ? (
-                <TextEditor />
-            ) : (
+        <div className='w-full max-w-7xl'>
+            {boletin.tipoPublicacion === "notificaciones" ? (
                 <SubirArchivo
                     disabled={false}
                     id="acta_constitutiva"
@@ -20,7 +18,9 @@ export default function Carga() {
                     nombreSA={"nombreSA"}
                     pathArchivo={"archivo?.path_arch"}
                 />
+            ) : (
+                <TextEditor />
             )}
-        </section>
+        </div>
     )
 }
