@@ -5,25 +5,12 @@ export const objetosApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/" }),
     endpoints: (builder) => ({
         // -------------Sociedad Anonima------------------
-        getSociedadAnonima: builder.query({
-            query: ({ id }) => `/sa_por_id/${id}`,
-        }),
-        postSociedadAnonima: builder.mutation({
-            query: ({ data, id }) => ({
-                url: `/crear_sociedad_anonima/${id}`,
+        postBoletinOficial: builder.mutation({
+            query: ({ data }) => ({
+                url: `/crear-boletin/`,
                 method: "POST",
                 body: data,
             }),
-        }),
-        postSociedadAnonimaEstado: builder.mutation({
-            query: ({ data, nombreSA }) => ({
-                url: `/${nombreSA}/cambio_estado`,
-                method: "POST",
-                body: data,
-            }),
-        }),
-        getSociedadUsuario: builder.query({
-            query: ({ id }) => `/${id}/mi-sociedad`,
         }),
         getSociedadUsuarioPendiente: builder.query({
             query: ({ id }) => `/${id}/sa_por_estado`,
@@ -185,14 +172,11 @@ export const objetosApi = createApi({
 });
 
 export const {
-    useGetSociedadAnonimaQuery,
-    useGetSociedadUsuarioQuery,
+    usePostBoletinOficialMutation,
     useGetSociedadUsuarioPendienteQuery,
-    usePostSociedadAnonimaEstadoMutation,
     useGetUsuariosQuery,
     usePostLoginMutation,
     usePutActaConstitutivaMutation,
-    usePostSociedadAnonimaMutation,
     usePostActaConstitutivaArchivoMutation,
     usePutContratoConstitutivoMutation,
     usePostContratoConstitutivoArchivoPersonaJuridicaMutation,

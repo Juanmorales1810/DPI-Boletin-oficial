@@ -34,15 +34,10 @@ export const boletinSchema = z.object({
         .max(70, {
             message: "El nombre no debe exceder los 70 caracteres.",
         }),
-    apellido: z
-        .string()
-        .min(3, {
-            message: "La calle debe tener al menos 3 caracteres.",
-        })
-        .max(100, {
-            message: "La calle no debe exceder los 120 caracteres.",
-        }),
-    tipoBoletin: z.enum(typeBoletin, {
+    email: z.string().email({
+        message: "Debes ingresar un email válido.",
+    }),
+    tipoPublicacion: z.enum(typeBoletin, {
         errorMap: () => ({ message: "Debes seleccionar un tipo de sociedad." }),
     }),
 });
