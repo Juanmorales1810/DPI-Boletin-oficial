@@ -29,8 +29,8 @@ export default function Home() {
     resolver: zodResolver(boletinSchema),
     defaultValues: {
       nombre: "",
-      apellido: "",
-      tipoBoletin: undefined,
+      email: "",
+      tipoPublicacion: undefined,
     },
   })
 
@@ -86,13 +86,13 @@ export default function Home() {
             />
             <FormField
               control={form.control}
-              name="apellido"
+              name="email"
               render={({ field }) => (
                 <FormItem className="flex flex-col justify-center items-center gap-1">
                   <div className="flex justify-center items-center gap-2">
-                    <FormLabel className="">Apellido</FormLabel>
+                    <FormLabel className="">Email</FormLabel>
                     <FormControl>
-                      <Input className="shadow-md" placeholder="Ingrese su apellido" {...field} />
+                      <Input className="shadow-md" placeholder="Ingrese su email" {...field} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -101,7 +101,7 @@ export default function Home() {
             />
             <FormField
               control={form.control}
-              name="tipoBoletin"
+              name="tipoPublicacion"
               render={({ field }) => (
                 <FormItem>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
