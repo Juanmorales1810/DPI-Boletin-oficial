@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from sqlmodel import Session, select
 from typing import Annotated
 
 from models.modelBO import Boletin
 from config.db import engine
-from queries.queryBO import subir_boletin
+from queries.queryBO import subir_boletin, buscar_boletines
 
 routerBO = APIRouter(tags=["Operaciones Boletin Oficial"])
 
@@ -17,11 +17,21 @@ SessionDep= Annotated[Session, Depends(get_session)] #SessionDep es un alias par
 
 
 @routerBO.post("/crear-boletin")
-def crearBoletin(boletin: Boletin, session: SessionDep):
+async def crearBoletin(boletin: Boletin, session: SessionDep):
     try:
-        boletinRefrescado= subir_boletin(boletin, session)
+        boletinRefrescado= await subir_boletin(boletin, session)
     except Exception as e:
         session.rollback() #si ocurre un error, se deshacen los cambios
-        raise HTTPException(status_code=400, detail="Error al subir el boletin")
+        raise HTTPException(status_code=400, detail=e)
     
     return boletinRefrescado
+
+@routerBO.get("/buscar-tipo-publicacion/{tipoPublicacion}")
+async def buscarTipoPublicacion(tipoPublicacion: str, session: SessionDep):
+    busquedas= await buscar_boletines(session, tipoPublicacion)
+    if not busquedas:
+        raise HTTPException(status_code=404, detail="No se encontraron boletines")
+    # listaBoletines=[]
+    # for busqueda in busquedas:
+    #     listaBoletines.append(busqueda.dict())
+    return busquedas#listaBoletines

@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field
-from datetime import datetime
+from datetime import datetime, date
 from pydantic import EmailStr
 
 class Boletin(SQLModel, table=True):
