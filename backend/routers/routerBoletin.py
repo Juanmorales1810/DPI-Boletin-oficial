@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session, select
-from typing import Annotated
+from typing import Annotated, Optional
 
 from models.modelBO import Boletin
 from config.db import engine
@@ -26,12 +26,10 @@ async def crearBoletin(boletin: Boletin, session: SessionDep):
     
     return boletinRefrescado
 
-@routerBO.get("/buscar-tipo-publicacion/{tipoPublicacion}")
-async def buscarTipoPublicacion(tipoPublicacion: str, session: SessionDep):
+@routerBO.get("/buscar-tipo-publicacion/")
+async def buscarTipoPublicacion(session: SessionDep, tipoPublicacion: Optional[str]= None):
     busquedas= await buscar_boletines(session, tipoPublicacion)
     if not busquedas:
         raise HTTPException(status_code=404, detail="No se encontraron boletines")
-    # listaBoletines=[]
-    # for busqueda in busquedas:
-    #     listaBoletines.append(busqueda.dict())
+
     return busquedas#listaBoletines
