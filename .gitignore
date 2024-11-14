@@ -130,3 +130,4 @@ dist
 .pnp.*
 # Virtual environment
 venv/
+*.pyc
