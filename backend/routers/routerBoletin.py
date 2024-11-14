@@ -36,8 +36,8 @@ async def buscarTipoPublicacion(session: SessionDep, tipoPublicacion: Optional[s
 
 
 @routerBO.get("/buscador-publicaciones")
-async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: list[str]=Query(None)):
-    busquedas= await buscar_mas_tipos(session, tipoPublicacion)
+async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: list[str]=Query(None), nombre: Optional[str]=Query(None)):
+    busquedas= await buscar_mas_tipos(session, tipoPublicacion, nombre)
     if not busquedas:
         raise HTTPException(status_code=404, detail="No se encontraron boletines")
 
