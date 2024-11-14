@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         <AppProvider>
           <Navbar />
-          <main className="min-h-[calc(100vh-304px)]">
+          <main className="min-h-[calc(100vh-256px)]">
             {children}
           </main>
           <Footer />
