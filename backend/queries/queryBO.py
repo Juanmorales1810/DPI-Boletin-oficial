@@ -22,3 +22,12 @@ async def buscar_boletines(session: Session, tipoPublicacion: str):
         query= session.exec(select(Boletin)).all()
     #en la linea de arriba use el where(extract) porque esa es la manera de acceder a una parte especifica de un tipo datetime en una consulta SQL. 
     return query 
+
+
+async def buscar_mas_tipos(session: Session, tipoPublicacion: list[str]):
+    fechaHoy=datetime.now()
+    if tipoPublicacion:
+        query= session.exec(select(Boletin).where(Boletin.tipoPublicacion.in_(tipoPublicacion)).where(extract("day", Boletin.fechaPublicacion) == fechaHoy.day)).all()
+    else:
+        return []
+    return query
