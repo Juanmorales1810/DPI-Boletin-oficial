@@ -36,7 +36,7 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
         if tipoPublicacion:
             query = query.where(Boletin.tipoPublicacion.in_(tipoPublicacion))
         if nombreBO:
-            query = query.where(Boletin.nombre.like(f"%{nombreBO}%"))
+            query = query.where(Boletin.nombre.like(f"%{nombreBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
         result = session.exec(query).all()
     else:
         return []
