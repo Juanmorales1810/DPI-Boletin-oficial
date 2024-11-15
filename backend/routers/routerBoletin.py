@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlmodel import Session, select
+from fastapi.responses import JSONResponse
+from sqlmodel import Session
 from typing import Annotated, Optional
 
 from models.modelBO import Boletin
@@ -40,5 +41,5 @@ async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: li
     busquedas= await buscar_mas_tipos(session, tipoPublicacion, nombre, fechaInicio, page, pageSize)
     if not busquedas:
         raise HTTPException(status_code=404, detail="No se encontraron boletines")
-
-    return busquedas
+    total= len(busquedas)
+    return {"boletines": busquedas, "contador": total}
