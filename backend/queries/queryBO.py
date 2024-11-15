@@ -25,18 +25,18 @@ async def buscar_boletines(session: Session, tipoPublicacion: str):
     return query 
 
 
-async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]], nombre: Optional[str]= None, fechaInicio: Optional[str]= None):
-    #fechaHoy = datetime.now()
-    
+async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]], nombreBO: Optional[str]= None, fechaInicio: Optional[str]= None):
     query= select(Boletin) #selecciona todos los boletines
-    if tipoPublicacion or nombre or fechaInicio:
+    if tipoPublicacion or nombreBO or fechaInicio:
         if fechaInicio:
             fechaConvertida= datetime.strptime(fechaInicio, "%Y-%m-%d")
-            query = query.where(extract("day", Boletin.fechaPublicacion) == fechaConvertida.day)
+            inicioDia=fechaConvertida.replace(hour=0, minute=0, second=0, microsecond=0) # a la fecha convertida, se le asigna el horario de inicio de dia
+            finDia=fechaConvertida.replace(hour=23, minute=59, second=59, microsecond=999999)# a la fecha convertida, se le asigna el horario de fin de dia
+            query= query.where(Boletin.fechaPublicacion.between(inicioDia, finDia)) #selecciona los boletines que se publicaron entre el inicio y fin del dia. Between es un metodo de SQLModel que permite seleccionar los valores que estan entre dos valores, equivale a usar el operador >= y <=
         if tipoPublicacion:
             query = query.where(Boletin.tipoPublicacion.in_(tipoPublicacion))
-        if nombre:
-            query = query.where(Boletin.nombre == nombre)
+        if nombreBO:
+            query = query.where(Boletin.nombre.like(f"%{nombreBO}%"))
         result = session.exec(query).all()
     else:
         return []
