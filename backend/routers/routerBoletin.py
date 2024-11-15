@@ -30,14 +30,14 @@ async def crearBoletin(boletin: Boletin, session: SessionDep):
 async def buscarTipoPublicacion(session: SessionDep, tipoPublicacion: Optional[str]= None):
     busquedas= await buscar_boletines(session, tipoPublicacion)
     if not busquedas:
-        raise HTTPException(status_code=404, detail="No se encontraron boletines")
+        raise HTTPException(status_code=204, detail="No se encontraron boletines")
 
     return busquedas#listaBoletines
 
 
 @routerBO.get("/buscador-publicaciones")
-async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: list[str]=Query(None), nombre: Optional[str]=Query(None)):
-    busquedas= await buscar_mas_tipos(session, tipoPublicacion, nombre)
+async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: list[str]=Query(None), nombre: Optional[str]=Query(None), fechaInicio: Optional[str]=Query(None)):
+    busquedas= await buscar_mas_tipos(session, tipoPublicacion, nombre, fechaInicio)
     if not busquedas:
         raise HTTPException(status_code=404, detail="No se encontraron boletines")
 

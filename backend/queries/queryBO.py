@@ -1,5 +1,6 @@
 from sqlmodel import Session, select, extract, or_
 from datetime import datetime
+from typing import Optional
 
 from models.modelBO import Boletin
 
@@ -24,16 +25,14 @@ async def buscar_boletines(session: Session, tipoPublicacion: str):
     return query 
 
 
-async def buscar_mas_tipos(session: Session, tipoPublicacion: list[str], nombre: str):
-    # fechaHoy=datetime.now()
-    # if tipoPublicacion:
-    #     query= session.exec(select(Boletin).where(or_(Boletin.tipoPublicacion.in_(tipoPublicacion), Boletin.nombre==nombre)).where(extract("day", Boletin.fechaPublicacion) == fechaHoy.day)).all()
-    # elif nombre:
-    #     return []
-    # return query
-    fechaHoy = datetime.now()
-    if tipoPublicacion or nombre:
-        query = select(Boletin).where(extract("day", Boletin.fechaPublicacion) == fechaHoy.day)
+async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]], nombre: Optional[str]= None, fechaInicio: Optional[str]= None):
+    #fechaHoy = datetime.now()
+    
+    query= select(Boletin) #selecciona todos los boletines
+    if tipoPublicacion or nombre or fechaInicio:
+        if fechaInicio:
+            fechaConvertida= datetime.strptime(fechaInicio, "%Y-%m-%d")
+            query = query.where(extract("day", Boletin.fechaPublicacion) == fechaConvertida.day)
         if tipoPublicacion:
             query = query.where(Boletin.tipoPublicacion.in_(tipoPublicacion))
         if nombre:
