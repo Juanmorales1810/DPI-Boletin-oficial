@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const typeBoletin = [
-    "leyes",
+    "Ley",
     "decretos",
     "normas",
     "ordenanzas",
@@ -14,7 +14,7 @@ const typeBoletin = [
 export type TypeBoletin = (typeof typeBoletin)[number];
 
 export const mappedBoletin: { [key in TypeBoletin]: string } = {
-    leyes: "Leyes",
+    Ley: "Leyes",
     decretos: "Decretos",
     normas: "Normas",
     ordenanzas: "Ordenanzas",

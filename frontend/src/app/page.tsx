@@ -111,7 +111,7 @@ export default function Home() {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent className="bg-gris70">
-                      <SelectItem value="leyes">Leyes</SelectItem>
+                      <SelectItem value="Ley">Leyes</SelectItem>
                       <SelectItem value="decretos">Decretos</SelectItem>
                       <SelectItem value="normas">Normas</SelectItem>
                       <SelectItem value="ordenanzas">Ordenanzas</SelectItem>
