@@ -36,6 +36,7 @@ import { RootState } from '@/store/store';
 import { usePostBoletinOficialMutation } from '@/store/apiSlice';
 import { toast } from 'sonner';
 import { cargarBoletin } from '@/store/appSilce';
+import { useRouter } from 'next/navigation';
 
 
 export default function TextEditor() {
@@ -45,6 +46,7 @@ export default function TextEditor() {
     const editorInstanceRef = useRef<Editor | null>(null);
     const [count, setCount] = useState(0);
     const dispatch = useDispatch();
+    const router = useRouter();
 
     useEffect(() => {
         if (editorRef.current) {
@@ -160,17 +162,15 @@ export default function TextEditor() {
         try {
             const response = await postBoletin({ data }).unwrap();
             console.log("Desde el envio: ", response);
-            if (response?.message)
-                toast.success(response.message, {
-                    richColors: true,
-                    style: {
-                        padding: "16px",
-                    },
-                });
+            // if (response?.message)
+            toast.success("Boletin creado exitosamente", {
+                richColors: true,
+                style: {
+                    padding: "16px",
+                },
+            });
             dispatch(cargarBoletin({ ...response.sa }));
-            // response?.sa.forma_constitutiva === "dinerario"
-            //     ? navigate("/constitucion-con-aportes-dinerarios")
-            //     : navigate("/constitucion-con-aportes-no-dinerarios");
+            router.push("/boletin-oficial");
         } catch (error: any) {
             console.error("Error en el envio: ", error);
             toast.error(error.data?.detail, {
