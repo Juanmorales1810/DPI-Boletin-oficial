@@ -25,7 +25,7 @@ async def buscar_boletines(session: Session, tipoPublicacion: str):
     return query 
 
 
-async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]], nombreBO: Optional[str]= None, fechaInicio: Optional[str]= None):
+async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]], nombreBO: Optional[str]= None, fechaInicio: Optional[str]= None, page: int=1, pageSize: int=10):
     query= select(Boletin) #selecciona todos los boletines
     if tipoPublicacion or nombreBO or fechaInicio:
         if fechaInicio:
@@ -39,6 +39,7 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
             query = query.where(Boletin.nombre.like(f"%{nombreBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
         
         query = query.order_by(Boletin.fechaPublicacion.desc()) #ordena los boletines por fecha de publicacion de manera descendente
+        query = query.offset((page - 1) * pageSize).limit(pageSize)
         result = session.exec(query).all()
     else:
         return []
