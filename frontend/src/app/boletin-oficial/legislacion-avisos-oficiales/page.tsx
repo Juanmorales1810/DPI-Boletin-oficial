@@ -5,8 +5,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { BuscarIcon } from "@/components/icons";
 import { Input } from '@/components/ui/input';
 import { es } from 'date-fns/locale';
-import { useState, useMemo, useCallback, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal } from "react";
+import { useState, useMemo, useCallback, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, SetStateAction } from "react";
 import useSWR from "swr";
+import Loader from "@/components/ui/loader";
 
 interface Item {
     nombre: string;
@@ -22,17 +23,24 @@ interface Item {
     id: number;
 }
 
-const fetcher = (...args: [RequestInfo, RequestInit]) => fetch(...args).then((res) => res.json());
+const fetcher = (...args: [RequestInfo, RequestInit]): Promise<any> => fetch(...args).then((res) => res.json());
 
 export default function LegislacionAvisosOficiales() {
     const [searchTerm, setSearchTerm] = useState('');
     const [date, setDate] = useState<Date | undefined>(new Date())
+    const [isActive, setIsActive] = useState(false);
     const [tipoBoletin, setTipoBoletin] = useState({
         leyes: true,
         decretos: true,
     });
+    //feacha actual
+    const today = new Date();
+    //convertir fecha en formato dd/mm/yyyy en español
+    const dateFormatted = date ? date.toLocaleDateString() : '';
+    //convertir fecha en formato yyyy-mm-dd
+    const dateBuscar = date ? date.toISOString().split('T')[0] : '';
 
-    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?${tipoBoletin.leyes ? "tipoPublicacion=Ley" : ""}${tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}`, fetcher, {
+    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?${tipoBoletin.leyes ? "tipoPublicacion=Ley" : ""}${tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}`, fetcher, {
         keepPreviousData: true,
     });
 
@@ -42,36 +50,28 @@ export default function LegislacionAvisosOficiales() {
     //     return data?.totalItems ? Math.ceil(data.totalItems / itemsPerPage) : 0;
     // }, [data?.totalItems, itemsPerPage, searchTerm]);
 
-    // const loadingState = isLoading || data?.totalItems.length === 0 ? "loading" : "idle";
+    const loadingState = isLoading || data?.length === 0 ? "loading" : "idle";
 
-    console.log(data);
-
-
-    const dateFormatted = date ? date.toLocaleDateString() : '';
-
-
-    const lawsAndNotices = [
-        { id: 1, title: 'Ley 1', description: 'Descripción de la Ley 1' },
-        { id: 2, title: 'Aviso Oficial 1', description: 'Descripción del Aviso Oficial 1' },
-        // Add more items here
-    ];
-
-    const filteredItems = lawsAndNotices.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleDaySelect = (day: SetStateAction<Date | undefined>) => {
+        setIsActive(!!day);
+        setDate(day);
+    };
 
     return (
-        <div className="flex">
-            <aside className="w-1/4 p-4 bg-gray-100 flex justify-center items-center">
-                <ul>
-                    <li className="mb-2 text-naranjaPrincipal"><a href="#">Leyes y Decretos oficiales</a></li>
-                    <li className="mb-2"><a href="#">Normas y Ordenanzas</a></li>
-                    <li className="mb-2"><a href="#">Edictos y Licitaciones</a></li>
-                    <li className="mb-2"><a href="#">Convocatorias y otros</a></li>
-                </ul>
+        <div className="flex text-grisPrincipal">
+            <aside className="w-1/4 p-4 bg-gray-100 flex flex-col justify-start items-center">
+                <div className="mt-12">
+                    <h2 className="text-xl font-bold mb-4">Secciones</h2>
+                    <ul>
+                        <li className="mb-2 text-naranjaPrincipal"><a href="#">Leyes y Decretos oficiales</a></li>
+                        <li className="mb-2"><a href="#">Normas y Ordenanzas</a></li>
+                        <li className="mb-2"><a href="#">Edictos y Licitaciones</a></li>
+                        <li className="mb-2"><a href="#">Convocatorias y otros</a></li>
+                    </ul>
+                </div>
             </aside>
             <main className="w-1/2 p-4">
-                <div className="space-y-2 max-w-2xl mx-auto mb-4">
+                <div className="space-y-2 max-w-2xl mx-auto mb-4 bg-white">
                     <div className="relative">
                         <Input
                             className="peer pe-9 px-4"
@@ -86,29 +86,36 @@ export default function LegislacionAvisosOficiales() {
                     </div>
                 </div>
                 <div>
-                    <h2 className="text-xl mb-4 bg-naranjaPrincipal text-white text-center py-3">Leyes y Decretos  dia {dateFormatted} </h2>
-                    <ul>
-                        {data?.map((item: Item) => (
-                            <li key={item.id} className="mb-4 p-4 border border-gray-300 rounded">
-                                <h3 className="text-lg font-bold">{item.nombre}</h3>
-                                <p>{item.fecha}</p>
-                            </li>
-                        ))}
-                    </ul>
+                    <h2 className="text-xl mb-4 bg-naranjaPrincipal text-white text-center py-3 rounded-lg">Leyes y Decretos  {isActive && `del dia ${dateFormatted}`} </h2>
+                    {
+                        loadingState === "loading" ? <Loader /> :
+                            loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
+                                <ul>
+                                    {data.map((item: Item) => (
+                                        <li key={item.id} className="mb-4 px-4 h-20 flex flex-col justify-center items-start border-2 shadow-md rounded-xl bg-white hover:border-naranjaPrincipal transition-colors">
+                                            <h3 className="text-lg font-bold">{item.nombre}</h3>
+                                            <p>{item.fecha.substring(0, 10)}</p>
+                                        </li>
+                                    ))}
+                                </ul>
+                    }
                 </div>
             </main>
-            <aside className="w-1/4 p-4 bg-gray-100">
-                <h2 className="text-xl font-bold mb-4">Buscar por Fecha</h2>
+            <aside className="w-1/4 p-4 bg-gray-100 mt-2">
+                <h2 className="text-xl font-medium mb-4">Buscar por Fecha</h2>
                 <div className='flex justify-start items-center'>
                     <Calendar
                         mode="single"
                         selected={date}
-                        onSelect={setDate}
-                        className="rounded-md border"
+                        onSelect={handleDaySelect}
+                        className="rounded-md border bg-white"
                         locale={es}
+                        disabled={{
+                            after: today,
+                        }}
                     />
                 </div>
-                <h2 className="text-xl font-bold mb-4">Buscar por tipo de Boletin</h2>
+                <h2 className="text-xl font-medium my-4">Buscar por tipo de Boletin</h2>
                 <div className="flex items-center space-x-2 py-2">
                     <Checkbox
                         id="leyes"
