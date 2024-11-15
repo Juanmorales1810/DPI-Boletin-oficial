@@ -6,6 +6,7 @@ import { Ubuntu } from 'next/font/google'
 import type { Metadata } from "next";
 
 import "@/style/globals.css"
+import { Toaster } from "sonner";
 
 const ubuntu = Ubuntu({
   subsets: ["latin"],
@@ -35,6 +36,7 @@ export default function RootLayout({
             {children}
           </main>
           <Footer />
+          <Toaster />
         </AppProvider>
       </body>
     </html>
