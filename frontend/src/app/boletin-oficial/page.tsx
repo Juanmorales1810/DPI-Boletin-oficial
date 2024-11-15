@@ -28,8 +28,8 @@ export default function BoletinOficialPage() {
     ];
 
     return (
-        <div className="w-full">
-            <div className="h-[300px] relative sm:h-[292px] w-full flex justify-center px-12 sm:px-20 md:px-32 lg:px-[222px] bg-[url('/img/textura.jpg')] bg-cover bg-no-repeat -z-10 bg-naranjaPrincipal"></div>
+        <div className="w-full text-grisPrincipal">
+            <div className="h-[300px] relative sm:h-[150px] w-full flex justify-center px-12 sm:px-20 md:px-32 lg:px-[222px] bg-[url('/img/textura.jpg')] bg-cover bg-no-repeat -z-10 bg-naranjaPrincipal"></div>
             <div className="mt-[-60px] flex w-full justify-center px-4 sm:px-20 md:px-32 lg:px-[120px] max-w-7xl mx-auto">
                 <div className="w-full bg-white border-2 px-6 md:px-10 lg:px-32 py-9 flex flex-col rounded-lg shadow-md">
                     <h1 className="flex-grow-0 flex-shrink-0 text-2xl md:text-3xl font-bold text-center text-grisPrincipal">Boletin oficial</h1>
