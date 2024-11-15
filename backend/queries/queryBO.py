@@ -41,7 +41,7 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
         query = query.order_by(Boletin.fechaPublicacion.desc()) #ordena los boletines por fecha de publicacion de manera descendente
         query = query.offset((page - 1) * pageSize).limit(pageSize)
 
-        result = session.exec(query).all() #ejecuta toda la consulta y devuelve una lista con los resultados?
+        result = session.exec(query).all() #ejecuta toda la consulta y devuelve una lista con los resultados? Si, gracias al .all()
     else:
         return []
     return result #result es del tipo list[Boletin] que es una lista de objetos de la clase Boletin
