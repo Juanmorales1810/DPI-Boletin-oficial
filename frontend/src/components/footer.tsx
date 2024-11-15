@@ -2,27 +2,37 @@ import { FacebookIcon, InstagramIcon, InstitucionalIcon, LogoSanJuanGob, XIcon, 
 
 export default function Footer() {
     return (
-        <footer className="flex justify-around items-center px-20 py-2 bg-grisPrincipal h-48">
+        <footer className="flex justify-around items-center px-20 py-4 bg-grisPrincipal">
             <div className="flex flex-col justify-center items-center">
                 <LogoSanJuanGob height={57} width={144} fill="#ffffff" />
                 <img src="/img/Frame- Escudo SJ.svg" alt="Logo San Juan Gobierno" className="h-20 brightness-200 mt-2" />
             </div>
             <div className="flex gap-4 justify-center items-center">
                 <InstitucionalIcon size={40} />
-                <ul className="flex flex-col gap-4 text-white">
+                <ul className="flex flex-col gap-1 text-white">
                     <li>
                         <p>
-                            Santa Fe 54 Oeste, entre Mendoza y Entre Ríos,
-                            SAN JUAN
+                            Casa de Gobierno de la Provincia de San Juan
                         </p>
                     </li>
                     <li>
-                        <p>Teléfono</p>
+                        <p>Paula Albarracín de Sarmiento 134 norte | C.P: 5400 | San Juan | Argentina</p>
+                    </li>
+                    <li>
+                        <p>Privado: (0264) 430 6848</p>
+                    </li>
+                    <li>
+                        <p>Conmutador: (0264) 429-5000</p>
+                    </li>
+                    <li>
+                        <p>FAX: (0264) 423-7333</p>
+                    </li>
+                    <li>
+                        <p>Centro Cívico</p>
                     </li>
                     <li>
                         <p>
-                            Email: igpj@sanjuan.gov.ar,
-                            turnosigpj@sanjuan.gov.ar
+                            Avenida Libertador General San Martín 750 Oeste | C.P: 5400 | San Juan | Argentina
                         </p>
                     </li>
                 </ul>
