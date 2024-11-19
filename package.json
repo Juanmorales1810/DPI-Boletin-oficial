@@ -1,0 +1,12 @@
+{
+    "name": "dpi-boletin-oficial",
+    "version": "1.0.0",
+    "scripts": {
+        "backend": "cd backend && venv\\Scripts\\activate && uvicorn main:app --reload",
+        "frontend": "cd frontend && npm run dev",
+        "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+    },
+    "devDependencies": {
+        "concurrently": "^9.1.0"
+    }
+}
