@@ -52,7 +52,7 @@ export default function BoletinOficialPage() {
                     className="bg-naranjaPrincipal text-white"
                     size="lg"
                 >
-                    <Link href="/">
+                    <Link href="/cargar-boletin">
                         Realizar Publicación
                     </Link>
                 </Button>
