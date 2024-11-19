@@ -152,10 +152,7 @@ export default function TextEditor() {
     const onSubmit = async () => {
         const data = {
             ...boletin,
-            contenido: JSON.stringify(editorInstanceRef.current?.getJSON(), null, 2)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;"),
+            contenido: editorInstanceRef.current?.getHTML(),
             precio: count * 8,
             fechaPublicacion: new Date(boletin.fechaPublicacion),
         };
@@ -170,7 +167,7 @@ export default function TextEditor() {
                 },
             });
             dispatch(cargarBoletin({ ...response.sa }));
-            router.push("/boletin-oficial");
+            router.push("/");
         } catch (error: any) {
             console.error("Error en el envio: ", error);
             toast.error(error.data?.detail, {

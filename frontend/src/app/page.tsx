@@ -1,136 +1,62 @@
-"use client";
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { boletinSchema } from "@/validations/boletinvalidation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Separator } from "@/components/ui/separator";
-import { cargarBoletin } from "@/store/appSilce";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useRouter } from 'next/navigation';
-import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { toast } from "sonner";
-import { z } from "zod";
+export default function BoletinOficialPage() {
 
-export default function Home() {
-
-  const dispatch = useDispatch();
-  const router = useRouter()
-
-  const form = useForm<z.infer<typeof boletinSchema>>({
-    resolver: zodResolver(boletinSchema),
-    defaultValues: {
-      nombre: "",
-      email: "",
-      tipoPublicacion: undefined,
-    },
-  })
-
-  function onSubmit(values: z.infer<typeof boletinSchema>) {
-    try {
-
-      toast.success("Crear Boletín", {
-        richColors: true,
-        style: {
-          padding: "16px",
+    const cards = [
+        {
+            title: 'Leyes y Decretos oficiales',
+            description: 'Consulta todos los boletines de Leyes y Decretos oficiales.',
+            link: '/boletin-oficial/legislacion-avisos-oficiales',
         },
-      });
-      dispatch(cargarBoletin({ ...values }));
-      router.push("/cargar-boletin")
-    } catch (error: any) {
-      console.error("Error en el envio: ", error);
-      toast.error(error.data?.detail, {
-        richColors: true,
-        style: {
-          padding: "16px",
+        {
+            title: 'Normas y Ordenanzas',
+            description: 'Consulta todos los boletines de Normas y Ordenanzas.',
+            link: '/boletin-oficial/legislacion-avisos-oficiales',
         },
-      });
-    }
-    console.log(values);
-  };
+        {
+            title: 'Edictos y Licitaciones',
+            description: 'Consulta todos los boletines de Edictos y Licitaciones.',
+            link: '/boletin-oficial/legislacion-avisos-oficiales',
+        },
+        {
+            title: 'Convocatorias y otros',
+            description: 'Consulta todos los boletines de Convocatorias y otros.',
+            link: '/boletin-oficial/legislacion-avisos-oficiales',
+        }
+    ];
 
-
-  return (
-    <section className="py-10">
-
-      <div className="flex justify-center items-center mx-auto gap-10 py-20 bg-white rounded-lg shadow-md max-w-5xl">
-        <div>
-          <h1 className="text-center text-2xl text-gris80 font-bold mb-6">Boletín Oficial</h1>
-          <img src="/img/Frame- Escudo SJ.svg" alt="Frame- Escudo SJ" className="w-full" />
+    return (
+        <div className="w-full text-grisPrincipal">
+            <div className="h-[300px] relative sm:h-[150px] w-full flex justify-center px-12 sm:px-20 md:px-32 lg:px-[222px] bg-[url('/img/textura.jpg')] bg-cover bg-no-repeat -z-10 bg-naranjaPrincipal"></div>
+            <div className="mt-[-60px] flex w-full justify-center px-4 sm:px-20 md:px-32 lg:px-[120px] max-w-7xl mx-auto">
+                <div className="w-full bg-white border-2 px-6 md:px-10 lg:px-32 py-9 flex flex-col rounded-lg shadow-md">
+                    <h1 className="flex-grow-0 flex-shrink-0 text-2xl md:text-3xl font-bold text-center text-grisPrincipal">Boletin oficial</h1>
+                </div>
+            </div>
+            <div className="max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto mt-8 py-6">
+                {cards.map((card, index) => (
+                    <Link
+                        key={index}
+                        className="bg-white shadow-md rounded-lg p-6 cursor-pointer hover:shadow-lg hover:bg-naranjaPrincipal hover:text-white transition-[shadow_color] group"
+                        href={card.link}
+                    >
+                        <h2 className="text-xl font-semibold mb-2">{card.title}</h2>
+                        <p className="text-gray-700 group-hover:text-white transition-colors">{card.description}</p>
+                    </Link>
+                ))}
+            </div>
+            <div className='max-w-6xl mx-auto py-4'>
+                <Button
+                    asChild
+                    className="bg-naranjaPrincipal text-white"
+                    size="lg"
+                >
+                    <Link href="/">
+                        Realizar Publicación
+                    </Link>
+                </Button>
+            </div>
         </div>
-        <Separator orientation="vertical" className="h-80" />
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
-            <FormField
-              control={form.control}
-              name="nombre"
-              render={({ field }) => (
-                <FormItem className="flex flex-col justify-center items-center gap-1">
-                  <div className="flex justify-center items-center gap-2">
-                    <FormLabel>Nombre</FormLabel>
-                    <FormControl>
-                      <Input className="shadow-md" placeholder="Ingrese su nombre" {...field} />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="flex flex-col justify-center items-center gap-1">
-                  <div className="flex justify-center items-center gap-2">
-                    <FormLabel className="">Email</FormLabel>
-                    <FormControl>
-                      <Input className="shadow-md" placeholder="Ingrese su email" {...field} />
-                    </FormControl>
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="tipoPublicacion"
-              render={({ field }) => (
-                <FormItem>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger className="bg-naranjaPrincipal text-white">
-                        <SelectValue placeholder="Seleccione tipo de documento" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent className="bg-gris70">
-                      <SelectItem value="Ley">Leyes</SelectItem>
-                      <SelectItem value="decretos">Decretos</SelectItem>
-                      <SelectItem value="normas">Normas</SelectItem>
-                      <SelectItem value="ordenanzas">Ordenanzas</SelectItem>
-                      <SelectItem value="notificaciones">Notificaciones (edictos)</SelectItem>
-                      <SelectItem value="licitaciones">Licitaciones</SelectItem>
-                      <SelectItem value="convocatorias">Convocatorias</SelectItem>
-                      <SelectItem value="otro">Otro</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" className="bg-naranjaPrincipal text-white w-24 ml-auto">
-              Siguiente
-            </Button>
-          </form>
-        </Form>
-      </div>
-    </section>
-  );
-}
+    );
+};

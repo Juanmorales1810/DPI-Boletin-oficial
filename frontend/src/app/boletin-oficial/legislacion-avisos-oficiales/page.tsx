@@ -5,9 +5,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { BuscarIcon } from "@/components/icons";
 import { Input } from '@/components/ui/input';
 import { es } from 'date-fns/locale';
-import { useState, useMemo, useCallback, AwaitedReactNode, JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, SetStateAction } from "react";
+import { useState, useMemo, SetStateAction } from "react";
 import useSWR from "swr";
 import Loader from "@/components/ui/loader";
+import Pagination from "@/components/ui/pagination";
 
 interface Item {
     nombre: string;
@@ -26,6 +27,7 @@ interface Item {
 const fetcher = (...args: [RequestInfo, RequestInit]): Promise<any> => fetch(...args).then((res) => res.json());
 
 export default function LegislacionAvisosOficiales() {
+    const [page, setPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState('');
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [isActive, setIsActive] = useState(false);
@@ -40,17 +42,17 @@ export default function LegislacionAvisosOficiales() {
     //convertir fecha en formato yyyy-mm-dd
     const dateBuscar = date ? date.toISOString().split('T')[0] : '';
 
-    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?${tipoBoletin.leyes ? "tipoPublicacion=Ley" : ""}${tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}`, fetcher, {
+    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?page=${page}${tipoBoletin.leyes ? "&tipoPublicacion=Ley" : ""}${tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}&pageSize=4`, fetcher, {
         keepPreviousData: true,
     });
 
-    const itemsPerPage = 12;
+    const itemsPerPage = 4;
 
-    // const pages = useMemo(() => {
-    //     return data?.totalItems ? Math.ceil(data.totalItems / itemsPerPage) : 0;
-    // }, [data?.totalItems, itemsPerPage, searchTerm]);
+    const pages = useMemo(() => {
+        return data?.contador ? Math.ceil(data.contador / itemsPerPage) : 0;
+    }, [data?.contador, itemsPerPage, searchTerm]);
 
-    const loadingState = isLoading || data?.length === 0 ? "loading" : "idle";
+    const loadingState = isLoading || data?.boletines === 0 ? "loading" : "idle";
 
     const handleDaySelect = (day: SetStateAction<Date | undefined>) => {
         setIsActive(!!day);
@@ -91,14 +93,22 @@ export default function LegislacionAvisosOficiales() {
                         loadingState === "loading" ? <Loader /> :
                             loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
                                 <ul>
-                                    {data.map((item: Item) => (
-                                        <li key={item.id} className="mb-4 px-4 h-20 flex flex-col justify-center items-start border-2 shadow-md rounded-xl bg-white hover:border-naranjaPrincipal transition-colors">
-                                            <h3 className="text-lg font-bold">{item.nombre}</h3>
-                                            <p>{item.fecha.substring(0, 10)}</p>
-                                        </li>
+                                    {data?.boletines.map((item: Item) => (
+                                        <a key={item.id} target="_blank" href="https://contenido.sanjuan.gob.ar/media/k2/attachments/(11)_(NOVIEMBRE)_15-11-2024__(P._84_Internet.pdf">
+                                            <li className="mb-4 px-4 h-20 flex flex-col justify-center items-start border-2 shadow-md rounded-xl bg-white hover:border-naranjaPrincipal transition-colors">
+                                                <h3 className="text-lg font-bold">{item.nombre}</h3>
+                                                <p>{item.fecha.substring(0, 10)}</p>
+                                            </li>
+                                        </a>
                                     ))}
                                 </ul>
                     }
+                    <Pagination
+                        total={pages}
+                        page={page}
+                        isCompact
+                        onPageChange={(page) => setPage(page)}
+                    />
                 </div>
             </main>
             <aside className="w-1/4 p-4 bg-gray-100 mt-2">
@@ -115,7 +125,7 @@ export default function LegislacionAvisosOficiales() {
                         }}
                     />
                 </div>
-                <h2 className="text-xl font-medium my-4">Buscar por tipo de Boletin</h2>
+                <h2 className="text-xl font-medium my-4">Buscar por tipo de Boletín</h2>
                 <div className="flex items-center space-x-2 py-2">
                     <Checkbox
                         id="leyes"
