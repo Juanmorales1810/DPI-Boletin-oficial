@@ -1,16 +1,16 @@
 from sqlmodel import SQLModel, Field
-from datetime import datetime, date
+from datetime import datetime
 from pydantic import EmailStr
 
 class Boletin(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
-    nombre: str
+    nombre: str = Field(index=True)
     email: EmailStr
     fecha: datetime = None
-    tipoPublicacion: str
+    tipoPublicacion: str = Field(index=True)
     contenido:str
     precio: float
     duracionPublicacion: int
     nombre_archivo: str | None 
     path_archivo : str | None 
-    fechaPublicacion: datetime= None #este campo obtendra en que fecha sera publicado el boletin oficial
+    fechaPublicacion: datetime= Field(default=None, index=True) #este campo obtendra en que fecha sera publicado el boletin oficial
