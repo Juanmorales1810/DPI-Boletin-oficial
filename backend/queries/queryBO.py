@@ -38,8 +38,8 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
     if nombreBO:
         query = query.where(Boletin.nombre.like(f"%{nombreBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
 
-    total_query = select(func.count()).select_from(query.subquery())  # Contar total de resultados
-    total = session.exec(total_query).one()
+    total_query = select(func.count()).select_from(query.subquery())  # func.count() es una funcion de SQL que cuenta el numero de filas que cumple con la condicion pero sin la paginacion. select_from es un metodo de SQLModel que selecciona las filas de una tabla, en este caso, de la subconsulta que se hace con query.subquery(), una subconsulta se hace para no afectar a la consulta principal
+    total = session.exec(total_query).one() #ejecuta la consulta y devuelve el resultado, en este caso, el numero de filas que cumple con la condicion y espera un unico resultado
         
     query = query.order_by(Boletin.fechaPublicacion.desc()) #ordena los boletines por fecha de publicacion de manera descendente
     query = query.offset((page - 1) * pageSize).limit(pageSize)
