@@ -11,6 +11,6 @@ class Boletin(SQLModel, table=True):
     contenido:str
     precio: float
     duracionPublicacion: int
-    nombre_archivo: str | None 
-    path_archivo : str | None 
+    nombreArchivo: str | None 
+    pathArchivo : str | None 
     fechaPublicacion: datetime= Field(default=None, index=True) #este campo obtendra en que fecha sera publicado el boletin oficial
