@@ -181,10 +181,10 @@ export default function TextEditor() {
     };
 
     return (
-        <div className='flex gap-4 justify-center items-start '>
+        <div className='flex flex-col gap-4 justify-center items-start px-2 md:flex-row'>
             <div className='w-full mx-auto py-6'>
                 <div className="flex flex-col justify-center items-center w-full">
-                    <div className="w-full px-3 py-2 border-b dark:border-zinc-700 rounded-t-lg bg-gris50 dark:bg-zinc-900 sticky top-20 z-50">
+                    <div className="w-full px-3 py-2 border-b dark:border-zinc-700 rounded-t-lg bg-gris50 dark:bg-zinc-900 sticky top-20 z-40">
                         <div className="flex flex-wrap items-center">
                             <div className="flex items-center space-x-1 rtl:space-x-reverse flex-wrap">
                                 <ToggleGroup type="multiple">
