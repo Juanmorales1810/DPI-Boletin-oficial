@@ -2,6 +2,8 @@ from sqlmodel import Session, select, extract, or_
 from datetime import datetime
 from typing import Optional
 from sqlalchemy.sql import func
+from io import BytesIO
+from xhtml2pdf import pisa
 
 from models.modelBO import Boletin
 
@@ -47,3 +49,12 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
     result = session.exec(query).all() #ejecuta toda la consulta y devuelve una lista con los resultados? Si, gracias al .all()
     
     return result, total #result es del tipo list[Boletin] que es una lista de objetos de la clase Boletin
+
+
+def html_a_pdf(html: str) -> BytesIO:
+    pdf = BytesIO()
+    pisa_status = pisa.CreatePDF(html, dest=pdf)
+    if pisa_status.err:
+        raise ValueError("Error al generar el PDF.")
+    pdf.seek(0)  # Mover el cursor al inicio del archivo en memoria
+    return pdf
