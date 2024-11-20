@@ -1,14 +1,15 @@
 "use client";
 
+import { useState, useMemo, SetStateAction } from "react";
+import Pagination from "@/components/ui/pagination";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
 import { BuscarIcon } from "@/components/icons";
 import { Input } from '@/components/ui/input';
-import { es } from 'date-fns/locale';
-import { useState, useMemo, SetStateAction } from "react";
-import useSWR from "swr";
 import Loader from "@/components/ui/loader";
-import Pagination from "@/components/ui/pagination";
+import { es } from 'date-fns/locale';
+import Link from "next/link";
+import useSWR from "swr";
 
 interface Item {
     nombre: string;
@@ -32,8 +33,8 @@ export default function LegislacionAvisosOficiales() {
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [isActive, setIsActive] = useState(false);
     const [tipoBoletin, setTipoBoletin] = useState({
-        leyes: true,
-        decretos: true,
+        normas: true,
+        ordenanzas: true,
     });
     //feacha actual
     const today = new Date();
@@ -42,7 +43,7 @@ export default function LegislacionAvisosOficiales() {
     //convertir fecha en formato yyyy-mm-dd
     const dateBuscar = date ? date.toISOString().split('T')[0] : '';
 
-    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?page=${page}${tipoBoletin.leyes ? "&tipoPublicacion=Ley" : ""}${tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}&pageSize=4`, fetcher, {
+    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?page=${page}${tipoBoletin.normas ? "&tipoPublicacion=Normas" : ""}${tipoBoletin.ordenanzas ? "&tipoPublicacion=Ordenanzas" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}&pageSize=4`, fetcher, {
         keepPreviousData: true,
     });
 
@@ -60,19 +61,19 @@ export default function LegislacionAvisosOficiales() {
     };
 
     return (
-        <div className="flex text-grisPrincipal">
-            <aside className="w-1/4 p-4 bg-gray-100 flex flex-col justify-start items-center">
+        <div className="flex flex-col justify-center items-center text-grisPrincipal md:flex-row md:items-start">
+            <aside className="w-1/4 p-4 bg-gray-100 hidden flex-col justify-start items-center md:flex">
                 <div className="mt-12">
                     <h2 className="text-xl font-bold mb-4">Secciones</h2>
                     <ul>
-                        <li className="mb-2 text-naranjaPrincipal"><a href="#">Leyes y Decretos oficiales</a></li>
-                        <li className="mb-2"><a href="#">Normas y Ordenanzas</a></li>
-                        <li className="mb-2"><a href="#">Edictos y Licitaciones</a></li>
-                        <li className="mb-2"><a href="#">Convocatorias y otros</a></li>
+                        <li className="mb-2"><Link href="/boletin-oficial/leyes-decretos-oficiales">Leyes y Decretos oficiales</Link></li>
+                        <li className="mb-2 text-naranjaPrincipal"><Link href="#">Normas y Ordenanzas</Link></li>
+                        <li className="mb-2"><Link href="/boletin-oficial/edictos-y-licitaciones">Edictos y Licitaciones</Link></li>
+                        <li className="mb-2"><Link href="/boletin-oficial/convocatorias-y-otros">Convocatorias y otros</Link></li>
                     </ul>
                 </div>
             </aside>
-            <main className="w-1/2 p-4">
+            <main className="w-full p-4 md:w-1/2">
                 <div className="space-y-2 max-w-2xl mx-auto mb-4 bg-white">
                     <div className="relative">
                         <Input
@@ -88,10 +89,10 @@ export default function LegislacionAvisosOficiales() {
                     </div>
                 </div>
                 <div>
-                    <h2 className="text-xl mb-4 bg-naranjaPrincipal text-white text-center py-3 rounded-lg">Leyes y Decretos  {isActive && `del dia ${dateFormatted}`} </h2>
+                    <h2 className="text-xl mb-4 bg-naranjaPrincipal text-white text-center py-3 rounded-lg">Normas y Ordenanzas  {isActive && `del dia ${dateFormatted}`} </h2>
                     {
                         loadingState === "loading" ? <Loader /> :
-                            loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
+                            loadingState === "idle" && !data ? <p>No se encontraron Boletines</p> :
                                 <ul>
                                     {data?.boletines.map((item: Item) => (
                                         <a key={item.id} target="_blank" href="https://contenido.sanjuan.gob.ar/media/k2/attachments/(11)_(NOVIEMBRE)_15-11-2024__(P._84_Internet.pdf">
@@ -103,17 +104,20 @@ export default function LegislacionAvisosOficiales() {
                                     ))}
                                 </ul>
                     }
-                    <Pagination
-                        total={pages}
-                        page={page}
-                        isCompact
-                        onPageChange={(page) => setPage(page)}
-                    />
+                    {
+                        data &&
+                        <Pagination
+                            total={pages}
+                            page={page}
+                            isCompact
+                            onPageChange={(page) => setPage(page)}
+                        />
+                    }
                 </div>
             </main>
-            <aside className="w-1/4 p-4 bg-gray-100 mt-2">
-                <h2 className="text-xl font-medium mb-4">Buscar por Fecha</h2>
-                <div className='flex justify-start items-center'>
+            <aside className="w-full p-4 bg-gray-100 mt-2 md:w-1/4 md:pt-14 md:pl-20">
+                <h2 className="text-xl font-medium text-center mb-4 md:text-start">Buscar por Fecha</h2>
+                <div className='flex justify-center items-center md:justify-start'>
                     <Calendar
                         mode="single"
                         selected={date}
@@ -125,32 +129,34 @@ export default function LegislacionAvisosOficiales() {
                         }}
                     />
                 </div>
-                <h2 className="text-xl font-medium my-4">Buscar por tipo de Boletín</h2>
-                <div className="flex items-center space-x-2 py-2">
-                    <Checkbox
-                        id="leyes"
-                        checked={tipoBoletin.leyes}
-                        onCheckedChange={() => setTipoBoletin({ ...tipoBoletin, leyes: !tipoBoletin.leyes })}
-                    />
-                    <label
-                        htmlFor="leyes"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
-                    >
-                        Leyes
-                    </label>
-                </div>
-                <div className="flex items-center space-x-2 py-2">
-                    <Checkbox
-                        id="decretos"
-                        checked={tipoBoletin.decretos}
-                        onCheckedChange={() => setTipoBoletin({ ...tipoBoletin, decretos: !tipoBoletin.decretos })}
-                    />
-                    <label
-                        htmlFor="decretos"
-                        className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
-                    >
-                        Decretos
-                    </label>
+                <h2 className="text-xl font-medium text-center my-4 md:text-start">Buscar por tipo de Boletín</h2>
+                <div className="flex justify-center items-center gap-4 md:flex-col md:items-start md:gap-0">
+                    <div className="flex items-center space-x-2 py-2">
+                        <Checkbox
+                            id="normas"
+                            checked={tipoBoletin.normas}
+                            onCheckedChange={() => setTipoBoletin({ ...tipoBoletin, normas: !tipoBoletin.normas })}
+                        />
+                        <label
+                            htmlFor="normas"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
+                        >
+                            Normas
+                        </label>
+                    </div>
+                    <div className="flex items-center space-x-2 py-2">
+                        <Checkbox
+                            id="ordenanzas"
+                            checked={tipoBoletin.ordenanzas}
+                            onCheckedChange={() => setTipoBoletin({ ...tipoBoletin, ordenanzas: !tipoBoletin.ordenanzas })}
+                        />
+                        <label
+                            htmlFor="ordenanzas"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 select-none"
+                        >
+                            Ordenanzas
+                        </label>
+                    </div>
                 </div>
             </aside>
         </div>

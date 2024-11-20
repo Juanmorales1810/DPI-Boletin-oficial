@@ -2,13 +2,13 @@ import { FacebookIcon, InstagramIcon, InstitucionalIcon, LogoSanJuanGob, XIcon, 
 
 export default function Footer() {
     return (
-        <footer className="flex justify-around items-center px-20 py-4 bg-grisPrincipal">
+        <footer className="flex flex-col justify-around items-start gap-2 px-2 py-4 bg-grisPrincipal md:flex-row md:px-20">
             <div className="flex flex-col justify-center items-center">
                 <LogoSanJuanGob height={57} width={144} fill="#ffffff" />
                 <img src="/img/Frame- Escudo SJ.svg" alt="Logo San Juan Gobierno" className="h-20 brightness-200 mt-2" />
             </div>
             <div className="flex gap-4 justify-center items-center">
-                <InstitucionalIcon size={40} />
+                <InstitucionalIcon size={40} className="hidden md:block" />
                 <ul className="flex flex-col gap-1 text-white">
                     <li>
                         <p>
