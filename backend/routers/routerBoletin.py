@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from sqlmodel import Session
 from typing import Annotated, Optional
 
@@ -36,7 +36,16 @@ async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: li
     return {"boletines": busquedas, "contador": total}
 
 
-
+@routerBO.post("/descargar-pdf/")
+async def descargar_pdf(html: str):
+    try:
+        pdf = html_a_pdf(html)
+        headers = {
+            "Content-Disposition": "attachment; filename=boletin_oficial.pdf"
+        }
+        return Response(content=pdf.read(), media_type="application/pdf", headers=headers)
+    except Exception as e:
+        return {"error": str(e)}
 
 
 # @routerBO.get("/buscar-tipo-publicacion")
