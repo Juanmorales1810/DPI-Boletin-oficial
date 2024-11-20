@@ -59,21 +59,21 @@ export default function Home() {
 
 
   return (
-    <section className="py-10 w-full">
-      <div className="flex justify-center items-center mx-auto gap-10 py-20 bg-white rounded-lg shadow-md max-w-5xl">
+    <section className="py-10 w-full px-2">
+      <div className="flex flex-col justify-center items-center mx-auto gap-10 py-20 bg-white rounded-lg shadow-md max-w-5xl md:flex-row">
         <div>
           <h1 className="text-center text-2xl text-gris80 font-bold mb-6">Boletín Oficial</h1>
           <img src="/img/Frame- Escudo SJ.svg" alt="Frame- Escudo SJ" className="w-full" />
         </div>
-        <Separator orientation="vertical" className="h-80" />
+        <Separator orientation="vertical" className="h-80 hidden md:block" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="nombre"
               render={({ field }) => (
-                <FormItem className="flex flex-col justify-center items-center gap-1">
-                  <div className="flex justify-center items-center gap-2">
+                <FormItem className="flex flex-col justify-center items-center gap-1 w-full">
+                  <div className="flex justify-between items-center gap-2 w-full">
                     <FormLabel>Nombre</FormLabel>
                     <FormControl>
                       <Input className="shadow-md" placeholder="Ingrese su nombre" {...field} />
@@ -87,9 +87,9 @@ export default function Home() {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem className="flex flex-col justify-center items-center gap-1">
-                  <div className="flex justify-center items-center gap-2">
-                    <FormLabel className="">Email</FormLabel>
+                <FormItem className="flex flex-col justify-center items-center gap-1 w-full">
+                  <div className="flex justify-between items-center gap-2 w-full">
+                    <FormLabel className="mr-4">Email</FormLabel>
                     <FormControl>
                       <Input className="shadow-md" placeholder="Ingrese su email" {...field} />
                     </FormControl>
