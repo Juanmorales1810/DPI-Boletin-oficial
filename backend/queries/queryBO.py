@@ -58,3 +58,18 @@ def html_a_pdf(html: str) -> BytesIO:
         raise ValueError("Error al generar el PDF.")
     pdf.seek(0)  # Mover el cursor al inicio del archivo en memoria
     return pdf
+
+
+async def subir_archivo(session: Session, boletin: Boletin, archivo: dict):
+    boletin.nombreArchivo=str(archivo.get("nombre")) #.get es un metodo de diccionarios que permite obtener el valor de una clave, si la clave no existe, devuelve None
+    boletin.pathArchivo=str(archivo.get("path"))
+    boletin.fecha=datetime.now()
+    boletin.fechaPublicacion=datetime.now()
+    try:
+        session.add(boletin)
+        session.commit()
+        session.refresh(boletin)
+    except Exception as e:
+        session.rollback()
+        raise e
+    return boletin

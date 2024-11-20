@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
 from fastapi.responses import JSONResponse, Response
 from sqlmodel import Session
 from typing import Annotated, Optional
+from pathlib import Path
 
 from models.modelBO import Boletin
 from config.db import engine
@@ -46,7 +47,29 @@ async def descargar_pdf(html: str):
         return Response(content=pdf.read(), media_type="application/pdf", headers=headers)
     except Exception as e:
         return {"error": str(e)}
+    
 
+@routerBO.post("/subir-archivo-boletin")
+async def subirArchivoBoletin(session: SessionDep, nombre:str = Form(...), email:str=Form(...), file: UploadFile = File(...)):
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
+    
+    rutaDirec= Path("archivos") / "boletines"
+    rutaArch= rutaDirec / file.filename
+
+    if rutaArch.exists():
+        raise HTTPException(status_code=400, detail="El archivo ya existe")
+    
+    rutaDirec.mkdir(parents=True, exist_ok=True)
+
+    archivo={
+        "nombre": file.filename,
+        "path": rutaArch
+    }
+    boletin=Boletin(nombre=nombre, email=email, contenido="", tipoPublicacion="", precio=0, duracionPublicacion=0, nombreArchivo="", pathArchivo="") #por el momento precio esta en 0 ya que eso lo tengo que calcular luego
+    boletinRefrescado= await subir_archivo(session, boletin, archivo)
+
+    return boletinRefrescado
 
 # @routerBO.get("/buscar-tipo-publicacion")
 # async def buscarTipoPublicacion(session: SessionDep, tipoPublicacion: Optional[str]= None):
