@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse, Response
 from sqlmodel import Session
 from typing import Annotated, Optional
 from pathlib import Path
+from pypdf import PdfReader
 
 from models.modelBO import Boletin
 from config.db import engine
@@ -43,8 +44,8 @@ async def descargar_pdf(html: str):
         pdf = html_a_pdf(html)
         headers = {
             "Content-Disposition": "attachment; filename=boletin_oficial.pdf"
-        }
-        return Response(content=pdf.read(), media_type="application/pdf", headers=headers)
+        } #Content-Disposition es una cabecera HTTP que indica si el contenido debe ser mostrado en el navegador o descargado como un archivo adjunto
+        return Response(content=pdf.read(), media_type="application/pdf", headers=headers) #Response es una clase de FastAPI que permite devolver una respuesta HTTP personalizada, el content tiene el contenido del archivo, media_type es el tipo de archivo y headers son las cabeceras HTTP
     except Exception as e:
         return {"error": str(e)}
     
@@ -70,6 +71,24 @@ async def subirArchivoBoletin(session: SessionDep, nombre:str = Form(...), email
     boletinRefrescado= await subir_archivo(session, boletin, archivo)
 
     return boletinRefrescado
+
+
+@routerBO.post("/calcular-precio-pdf")
+async def calcularPrecioPDF(file: UploadFile=File(...)):
+    if file.content_type != "application/pdf":
+        raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
+    
+    textoExtraido, contador= await extraer_texto_pdf(file)
+
+    precioFinal= await calcular_pdf(contador)
+
+    return {"textoExtraido": textoExtraido, "contadorPalabras": contador, "precioFinal": precioFinal}
+
+
+
+
+
+
 
 # @routerBO.get("/buscar-tipo-publicacion")
 # async def buscarTipoPublicacion(session: SessionDep, tipoPublicacion: Optional[str]= None):

@@ -4,6 +4,8 @@ from typing import Optional
 from sqlalchemy.sql import func
 from io import BytesIO
 from xhtml2pdf import pisa
+from fastapi import UploadFile
+from pypdf import PdfReader
 
 from models.modelBO import Boletin
 
@@ -73,3 +75,21 @@ async def subir_archivo(session: Session, boletin: Boletin, archivo: dict):
         session.rollback()
         raise e
     return boletin
+
+async def extraer_texto_pdf(file: UploadFile):
+    contenidoPDF=await file.read()
+    pdf= PdfReader(BytesIO(contenidoPDF))#pdfReader es una funcion de PyPDF2 que permite leer un archivo PDF, en este caso, BytesIO(contenidoPDF) es un archivo PDF en memoria
+    textoExtraido="" #inicializo la variable textoExtraido
+
+    for page in pdf.pages:
+        textoExtraido+= page.extract_text()
+    
+    contadorPalabras= len(textoExtraido.split()) #split es un metodo de Python que separa una cadena de texto en palabras, por defecto, separa por espacios
+
+    return textoExtraido, contadorPalabras
+
+async def calcular_pdf(contador:int):
+    precio=0
+    precio= contador*8
+
+    return precio
