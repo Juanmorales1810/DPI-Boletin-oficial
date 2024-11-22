@@ -57,7 +57,7 @@ async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descr
     rutaDirec= Path("archivos") / "boletines"
     rutaArch= rutaDirec / file.filename
 
-    if rutaArch.exists():
+    if rutaArch.exists(): 
         raise HTTPException(status_code=400, detail="El archivo ya existe")
     
     rutaDirec.mkdir(parents=True, exist_ok=True)

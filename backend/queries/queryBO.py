@@ -22,11 +22,14 @@ async def subir_boletin(boletinData: BoletinCreate, session: Session):
         fecha=datetime.now(),
         fechaPublicacion=datetime.now()
     )
+    try: # el try lo pongo aca para envolver el codigo que interactua con la base de datos, por si hay un error, se deshacen los cambios
+        session.add(boletin)
+        session.commit()
+        session.refresh(boletin)
+    except Exception as e:
+        session.rollback()
+        raise e 
 
-    session.add(boletin)
-    session.commit()
-    session.refresh(boletin)
-    
     return boletin
 
 
