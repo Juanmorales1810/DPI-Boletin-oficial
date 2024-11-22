@@ -3,9 +3,8 @@ from fastapi.responses import JSONResponse, Response
 from sqlmodel import Session
 from typing import Annotated, Optional
 from pathlib import Path
-from pypdf import PdfReader
 
-from models.modelBO import Boletin
+from models.modelBO import Boletin, BoletinCreate
 from config.db import engine
 from queries.queryBO import *
 
@@ -20,9 +19,9 @@ SessionDep= Annotated[Session, Depends(get_session)] #SessionDep es un alias par
 
 
 @routerBO.post("/crear-boletin")
-async def crearBoletin(boletin: Boletin, session: SessionDep):
+async def crearBoletin(boletinData: BoletinCreate, session: SessionDep):
     try:
-        boletinRefrescado= await subir_boletin(boletin, session)
+        boletinRefrescado= await subir_boletin(boletinData, session)
     except Exception as e:
         session.rollback() #si ocurre un error, se deshacen los cambios
         raise HTTPException(status_code=400, detail=e)

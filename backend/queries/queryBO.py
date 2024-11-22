@@ -7,13 +7,22 @@ from xhtml2pdf import pisa
 from fastapi import UploadFile
 from pypdf import PdfReader
 
-from models.modelBO import Boletin
+from models.modelBO import Boletin, BoletinCreate
 
 
-async def subir_boletin(boletin: Boletin, session: Session):
+async def subir_boletin(boletinData: BoletinCreate, session: Session):
+    boletin=Boletin(
+        titulo=boletinData.titulo,
+        descripcion=boletinData.descripcion,
+        tipoPublicacion=boletinData.tipoPublicacion,
+        tipoActividad=boletinData.tipoActividad,
+        contenido=boletinData.contenido,
+        precio=boletinData.precio,
+        duracionPublicacion=boletinData.duracionPublicacion,
+        fecha=datetime.now(),
+        fechaPublicacion=datetime.now()
+    )
 
-    boletin.fecha=datetime.now()
-    boletin.fechaPublicacion=datetime.now()
 
     session.add(boletin)
     session.commit()
