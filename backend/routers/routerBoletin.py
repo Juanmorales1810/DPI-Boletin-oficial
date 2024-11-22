@@ -68,7 +68,9 @@ async def subirArchivoBoletin(session: SessionDep, nombre:str = Form(...), email
         "path": rutaArch
     }
     boletin=Boletin(nombre=nombre, email=email, contenido="", tipoPublicacion=tipoPublicacion, precio=0, duracionPublicacion=0, nombreArchivo="", pathArchivo="") #por el momento precio esta en 0 ya que eso lo tengo que calcular luego
-    boletinRefrescado= await subir_archivo(session, boletin, archivo)
+    textoExtraido, contador= await extraer_texto_pdf(file)
+    precioFinal= await calcular_pdf(contador)
+    boletinRefrescado= await subir_archivo(session, boletin, archivo, textoExtraido, precioFinal)
 
     return boletinRefrescado
 

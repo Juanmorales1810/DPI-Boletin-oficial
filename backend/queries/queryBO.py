@@ -62,11 +62,13 @@ def html_a_pdf(html: str) -> BytesIO:
     return pdf
 
 
-async def subir_archivo(session: Session, boletin: Boletin, archivo: dict):
+async def subir_archivo(session: Session, boletin: Boletin, archivo: dict, contenido: str, precioFinal: float):
     boletin.nombreArchivo=str(archivo.get("nombre")) #.get es un metodo de diccionarios que permite obtener el valor de una clave, si la clave no existe, devuelve None
     boletin.pathArchivo=str(archivo.get("path"))
     boletin.fecha=datetime.now()
     boletin.fechaPublicacion=datetime.now()
+    boletin.contenido=contenido
+    boletin.precio=precioFinal
     try:
         session.add(boletin)
         session.commit()
@@ -89,7 +91,7 @@ async def extraer_texto_pdf(file: UploadFile):
     return textoExtraido, contadorPalabras
 
 async def calcular_pdf(contador:int):
-    precio=0
+    precio:float=0
     precio= contador*8
 
     return precio
