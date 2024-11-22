@@ -23,10 +23,10 @@ async def subir_boletin(boletinData: BoletinCreate, session: Session):
         fechaPublicacion=datetime.now()
     )
 
-
     session.add(boletin)
     session.commit()
     session.refresh(boletin)
+    
     return boletin
 
 

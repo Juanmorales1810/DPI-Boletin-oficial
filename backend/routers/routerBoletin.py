@@ -50,7 +50,7 @@ async def descargar_pdf(html: str):
     
 
 @routerBO.post("/subir-archivo-boletin")
-async def subirArchivoBoletin(session: SessionDep, nombre:str = Form(...), email:str=Form(...), tipoPublicacion: str=Form(...),file: UploadFile = File(...)):
+async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descripcion:str= Form(...), tipoActividad:str=Form(...), tipoPublicacion: str=Form(...), duracionPublicacion: int=Form(...),file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
     
@@ -66,7 +66,7 @@ async def subirArchivoBoletin(session: SessionDep, nombre:str = Form(...), email
         "nombre": file.filename,
         "path": rutaArch
     }
-    boletin=Boletin(nombre=nombre, email=email, contenido="", tipoPublicacion=tipoPublicacion, precio=0, duracionPublicacion=0, nombreArchivo="", pathArchivo="") #por el momento precio esta en 0 ya que eso lo tengo que calcular luego
+    boletin=Boletin(titulo=titulo, descripcion=descripcion, tipoActividad=tipoActividad, contenido="", tipoPublicacion=tipoPublicacion, precio=0, duracionPublicacion=duracionPublicacion, nombreArchivo="", pathArchivo="") #por el momento precio esta en 0 ya que eso lo tengo que calcular luego
     textoExtraido, contador= await extraer_texto_pdf(file)
     precioFinal= await calcular_pdf(contador)
     boletinRefrescado= await subir_archivo(session, boletin, archivo, textoExtraido, precioFinal)
