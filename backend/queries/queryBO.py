@@ -106,16 +106,17 @@ async def calcular_pdf(contador:int):
     return precio
 
 
-async def crear_directorio(file: UploadFile):
+async def crear_directorio(archivo: UploadFile):
     try:
         rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
-        rutaArch= rutaDirec / file.filename
+        rutaArch= rutaDirec / archivo.filename
         
         rutaDirec.mkdir(parents=True, exist_ok=True)
 
         with rutaArch.open("wb") as f:
-            content= await file.read()
+            content= await archivo.read()
             f.write(content)
+        archivo.file.seek(0)#seek es un metodo de Python que mueve el cursor al inicio del archivo, lo hice ya que al leer el archivo aca, luego quedaba inutilizable para la siguiente funcnion en el router
 
     except Exception as e:
         print(f"Error al crear el directorio: {e}")
@@ -130,7 +131,7 @@ async def buscar_boletin_por_id(session: Session, id: int):
 
     except Exception as e:
         session.rollback()
-        
+
     return boletin
 
 # async def buscar_boletines(session: Session, tipoPublicacion: str):
