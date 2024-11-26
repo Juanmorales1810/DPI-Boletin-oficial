@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
-from fastapi.responses import JSONResponse, Response
+from fastapi.responses import JSONResponse, Response, FileResponse
 from sqlmodel import Session
 from typing import Annotated, Optional
 from pathlib import Path
+import os
 
 from models.modelBO import Boletin, BoletinCreate
 from config.db import engine
@@ -54,13 +55,14 @@ async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descr
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
     
-    rutaDirec= Path("archivos") / "boletines"
-    rutaArch= rutaDirec / file.filename
+    # rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
+    # rutaArch= rutaDirec / file.filename
 
-    if rutaArch.exists(): 
-        raise HTTPException(status_code=400, detail="El archivo ya existe")
+    # if rutaArch.exists(): 
+    #     raise HTTPException(status_code=400, detail="El archivo ya existe")
     
-    rutaDirec.mkdir(parents=True, exist_ok=True)
+    # rutaDirec.mkdir(parents=True, exist_ok=True)
+    rutaArch= await crear_directorio(file)
 
     archivo={
         "nombre": file.filename,
@@ -86,6 +88,24 @@ async def calcularPrecioPDF(file: UploadFile=File(...)):
     return {"textoExtraido": textoExtraido, "contadorPalabras": contador, "precioFinal": precioFinal}
 
 
+@routerBO.get("/archivos/{nombreSA}/{path_padre}/{nombrepdf}")
+def obtener_archivo(nombreSA: str, path_padre:str, nombrepdf: str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
+    base_path = Path("./archivos")
+    file_path = base_path / nombreSA / path_padre / nombrepdf
+
+    if not file_path.exists():
+        raise HTTPException(status_code=404, detail="Archivo no encontrado")
+
+    return FileResponse(path=str(file_path), media_type='application/pdf', filename=file_path.name, headers={"Content-Disposition": f'inline; filename="{file_path.name}"'})
+
+
+@routerBO.get("/obtener-boletin/{id}")
+async def obtenerBoletin(id:int, session: SessionDep):
+    boletin= await buscar_boletin_por_id(session, id)
+    if not boletin:
+        raise HTTPException(status_code=404, detail="Boletin no encontrado")
+    
+    return boletin
 
 
 

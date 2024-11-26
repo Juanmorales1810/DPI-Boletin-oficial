@@ -6,6 +6,8 @@ from io import BytesIO
 from xhtml2pdf import pisa
 from fastapi import UploadFile
 from pypdf import PdfReader
+import os
+from pathlib import Path
 
 from models.modelBO import Boletin, BoletinCreate
 
@@ -104,9 +106,32 @@ async def calcular_pdf(contador:int):
     return precio
 
 
+async def crear_directorio(file: UploadFile):
+    try:
+        rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
+        rutaArch= rutaDirec / file.filename
+        
+        rutaDirec.mkdir(parents=True, exist_ok=True)
+
+        with rutaArch.open("wb") as f:
+            content= await file.read()
+            f.write(content)
+
+    except Exception as e:
+        print(f"Error al crear el directorio: {e}")
+        raise
+    return rutaArch
 
 
+async def buscar_boletin_por_id(session: Session, id: int):
+    try:
+        query=select(Boletin).where(Boletin.id==id)
+        boletin= session.exec(query).first()
 
+    except Exception as e:
+        session.rollback()
+        
+    return boletin
 
 # async def buscar_boletines(session: Session, tipoPublicacion: str):
 #     fechaHoy=datetime.now()
