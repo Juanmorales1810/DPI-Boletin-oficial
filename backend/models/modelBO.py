@@ -25,3 +25,15 @@ class BoletinCreate(BaseModel):
     contenido: str
     precio: float
     duracionPublicacion: int
+
+class BoletinRead(BaseModel):
+    titulo: str
+    descripcion: str
+    tipoPublicacion: str
+    tipoActividad: str
+    contenido: str
+    duracionPublicacion: int
+
+class BoletinesRead(BaseModel):
+    boletines: list[BoletinRead]
+    contador: int 
