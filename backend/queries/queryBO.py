@@ -20,7 +20,7 @@ async def subir_boletin(boletinData: BoletinCreate, session: Session):
         descripcion=boletinData.descripcion,
         tipoPublicacion=boletinData.tipoPublicacion,
         tipoActividad=boletinData.tipoActividad,
-        contenido=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES),
+        contenido=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES), #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
         precio=boletinData.precio,
         duracionPublicacion=boletinData.duracionPublicacion,
         fecha=datetime.now(),
