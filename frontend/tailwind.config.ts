@@ -73,6 +73,7 @@ const config: Config = {
             wysiwyg: true,
         }),
         require("tailwindcss-animate"),
+        require("@tailwindcss/typography"),
     ],
 };
 export default config;

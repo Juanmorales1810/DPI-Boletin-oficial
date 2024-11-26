@@ -11,155 +11,20 @@ export const objetosApi = createApi({
                 body: data,
             }),
         }),
-        getBoletinOficialBuscador: builder.query({
-            query: ({ tipoBoletin, nombreBoletin, fechaPublicacion }) =>
-                `/buscador-publicaciones/${tipoBoletin}/`,
+        postSubirArchivoBoletin: builder.mutation({
+            query: ({ formData }) => ({
+                url: `/subir-archivo-boletin/`,
+                method: "POST",
+                body: formData,
+            }),
         }),
         getSociedadUsuarioPendiente: builder.query({
             query: ({ id }) => `/${id}/sa_por_estado`,
         }),
-        // -------------Requisitos------------------
-        putActaConstitutiva: builder.mutation({
-            query: ({ data, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_acta_constitutiva`,
-                method: "PUT",
-                body: data,
-            }),
+        getBoletinPorID: builder.query({
+            query: ({ id }) => `/obtener-boletin/${id}`,
         }),
-        postActaConstitutivaArchivo: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/subir_archivo_acta_constitutiva/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        putContratoConstitutivo: builder.mutation({
-            query: ({ personasData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_contrato_constitutivo`,
-                method: "PUT",
-                body: personasData,
-            }),
-        }),
-        postContratoConstitutivoArchivoPersonaJuridica: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/subir_archivo_persona_juridica/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        putNominaAccionista: builder.mutation({
-            query: ({ personasData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_nomina_accionistas`,
-                method: "PUT",
-                body: personasData,
-            }),
-        }),
-        postNominaAccionistaArchivo: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/subir_archivo_nomina_accionistas/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        putMiembrosDirectorio: builder.mutation({
-            query: ({ personasData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_miembros_directorio`,
-                method: "PUT",
-                body: personasData,
-            }),
-        }),
-        postMiembrosDirectorioArchivo: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/subir_archivo_miembros_directorio/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        putMiembrosSindicato: builder.mutation({
-            query: ({ personasData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_miembros_sindicatura`,
-                method: "PUT",
-                body: personasData,
-            }),
-        }),
-        postMiembrosSindicatoArchivo: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/subir_archivo_miembros_sindicatura/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        putDerechoinspeccionArchivo: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_derecho_inspeccion/`,
-                method: "PUT",
-                body: formData,
-            }),
-        }),
-        putNotaInspectorArchivo: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/requisitos/${nombreSA}/agregar_nota_inspector/`,
-                method: "PUT",
-                body: formData,
-            }),
-        }),
-        // -------------Capital Social------------------
-        PostSubirInventarioResumido: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_inventario_resumido/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirValuacionBienes: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_valuacion_bienes/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirValuacionTitulos: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_valuacion_titulos/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirAporteNoRegistrables: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_aporte_bienes_no_registrables/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirAcreditacionTransfernciaRegistrable: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_acreditacion_transferencia_bienes_registrables/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirAporteParticipanteOtraSociedades: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_aporte_participaciones_otras_sociedades/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirAporteCreditos: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_aporte_creditos/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
-        PostSubirAporteBienesRadicados: builder.mutation({
-            query: ({ formData, nombreSA }) => ({
-                url: `/no_dinerario/${nombreSA}/subir_aporte_bienes_radicados/`,
-                method: "POST",
-                body: formData,
-            }),
-        }),
+
         // -------------USUARIOS------------------
         getUsuarios: builder.query({
             query: () => "usuarios",
@@ -176,27 +41,9 @@ export const objetosApi = createApi({
 
 export const {
     usePostBoletinOficialMutation,
+    usePostSubirArchivoBoletinMutation,
     useGetSociedadUsuarioPendienteQuery,
     useGetUsuariosQuery,
     usePostLoginMutation,
-    usePutActaConstitutivaMutation,
-    usePostActaConstitutivaArchivoMutation,
-    usePutContratoConstitutivoMutation,
-    usePostContratoConstitutivoArchivoPersonaJuridicaMutation,
-    usePutNominaAccionistaMutation,
-    usePostNominaAccionistaArchivoMutation,
-    usePutMiembrosDirectorioMutation,
-    usePostMiembrosDirectorioArchivoMutation,
-    usePutMiembrosSindicatoMutation,
-    usePostMiembrosSindicatoArchivoMutation,
-    usePutDerechoinspeccionArchivoMutation,
-    usePutNotaInspectorArchivoMutation,
-    usePostSubirInventarioResumidoMutation,
-    usePostSubirValuacionBienesMutation,
-    usePostSubirValuacionTitulosMutation,
-    usePostSubirAporteNoRegistrablesMutation,
-    usePostSubirAcreditacionTransfernciaRegistrableMutation,
-    usePostSubirAporteParticipanteOtraSociedadesMutation,
-    usePostSubirAporteCreditosMutation,
-    usePostSubirAporteBienesRadicadosMutation,
+    useGetBoletinPorIDQuery,
 } = objetosApi;

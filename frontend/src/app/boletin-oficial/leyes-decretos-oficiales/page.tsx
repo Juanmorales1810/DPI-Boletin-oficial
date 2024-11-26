@@ -10,20 +10,7 @@ import useSWR from "swr";
 import Loader from "@/components/ui/loader";
 import Pagination from "@/components/ui/pagination";
 import Link from "next/link";
-
-interface Item {
-    nombre: string;
-    email: string;
-    fecha: string;
-    tipoPublicacion: string;
-    contenido: string;
-    precio: number;
-    duracionPublicacion: number;
-    nombre_archivo: string;
-    path_archivo: string;
-    fechaPublicacion: string;
-    id: number;
-}
+import { BoletinOficialState } from "@/store/appSilce";
 
 const fetcher = (...args: [RequestInfo, RequestInit]): Promise<any> => fetch(...args).then((res) => res.json());
 
@@ -94,10 +81,10 @@ export default function LegislacionAvisosOficiales() {
                         loadingState === "loading" ? <Loader /> :
                             loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
                                 <ul>
-                                    {data?.boletines.map((item: Item) => (
-                                        <a key={item.id} target="_blank" href="https://contenido.sanjuan.gob.ar/media/k2/attachments/(11)_(NOVIEMBRE)_15-11-2024__(P._84_Internet.pdf">
+                                    {data?.boletines.map((item: BoletinOficialState) => (
+                                        <a key={item.id} href={`/boletin-oficial/leyes-decretos-oficiales/${item.id}/${item.titulo}/${item.fecha.substring(0, 10)}`}>
                                             <li className="mb-4 px-4 h-20 flex flex-col justify-center items-start border-2 shadow-md rounded-xl bg-white hover:border-naranjaPrincipal transition-colors">
-                                                <h3 className="text-lg font-bold">{item.nombre}</h3>
+                                                <h3 className="text-lg font-bold">{item.titulo}</h3>
                                                 <p>{item.fecha.substring(0, 10)}</p>
                                             </li>
                                         </a>

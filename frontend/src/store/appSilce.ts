@@ -1,13 +1,18 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface BoletinOficialState {
-    nombre: string;
-    email: string;
+export interface BoletinOficialState {
+    id: number;
+    titulo: string;
+    descripcion: string;
     tipoPublicacion: string;
+    tipoActividad: string;
+    duracionPublicacion?: number;
     contenido: string;
     precio: number;
-    duracionPublicacion?: number;
     fechaPublicacion: string;
+    fecha: string;
+    nombreArchivo?: string;
+    pathArchivo?: string;
 }
 
 interface RootState {
@@ -16,13 +21,18 @@ interface RootState {
 
 const initialState: RootState = {
     boletinOficial: {
-        nombre: "",
-        email: "",
+        id: 0,
+        titulo: "",
+        descripcion: "",
         tipoPublicacion: "",
+        tipoActividad: "",
+        duracionPublicacion: 4,
         contenido: "",
         precio: 0,
-        duracionPublicacion: 4,
+        fecha: "",
         fechaPublicacion: new Date().toISOString(),
+        nombreArchivo: "",
+        pathArchivo: "",
     },
 };
 
