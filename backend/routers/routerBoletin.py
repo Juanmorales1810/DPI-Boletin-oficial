@@ -9,6 +9,7 @@ from models.modelBO import Boletin, BoletinCreate
 from config.db import engine
 from queries.queryBO import *
 
+
 routerBO = APIRouter(tags=["Operaciones Boletin Oficial"])
 
 
@@ -54,14 +55,7 @@ async def descargar_pdf(html: str):
 async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descripcion:str= Form(...), tipoActividad:str=Form(...), tipoPublicacion: str=Form(...), duracionPublicacion: int=Form(...),file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
-    
-    # rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
-    # rutaArch= rutaDirec / file.filename
 
-    # if rutaArch.exists(): 
-    #     raise HTTPException(status_code=400, detail="El archivo ya existe")
-    
-    # rutaDirec.mkdir(parents=True, exist_ok=True)
     rutaArch= await crear_directorio(file)
 
     archivo={

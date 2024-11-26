@@ -8,8 +8,10 @@ from fastapi import UploadFile
 from pypdf import PdfReader
 import os
 from pathlib import Path
+import bleach
 
 from models.modelBO import Boletin, BoletinCreate
+from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS
 
 
 async def subir_boletin(boletinData: BoletinCreate, session: Session):
@@ -18,7 +20,7 @@ async def subir_boletin(boletinData: BoletinCreate, session: Session):
         descripcion=boletinData.descripcion,
         tipoPublicacion=boletinData.tipoPublicacion,
         tipoActividad=boletinData.tipoActividad,
-        contenido=boletinData.contenido,
+        contenido=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES),
         precio=boletinData.precio,
         duracionPublicacion=boletinData.duracionPublicacion,
         fecha=datetime.now(),
