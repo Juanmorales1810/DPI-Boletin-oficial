@@ -92,7 +92,7 @@ export default function LegislacionAvisosOficiales() {
                     <h2 className="text-xl mb-4 bg-naranjaPrincipal text-white text-center py-3 rounded-lg">Edictos y Licitaciones  {isActive && `del dia ${dateFormatted}`} </h2>
                     {
                         loadingState === "loading" ? <Loader /> :
-                            loadingState === "idle" && !data ? <p>No se encontraron Boletines</p> :
+                            loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
                                 <ul>
                                     {data?.boletines.map((item: Item) => (
                                         <a key={item.id} target="_blank" href="https://contenido.sanjuan.gob.ar/media/k2/attachments/(11)_(NOVIEMBRE)_15-11-2024__(P._84_Internet.pdf">
