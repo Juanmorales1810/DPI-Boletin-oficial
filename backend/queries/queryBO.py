@@ -134,6 +134,7 @@ async def buscar_boletin_por_id(session: Session, id: int):
 
     return boletin
 
+
 # async def buscar_boletines(session: Session, tipoPublicacion: str):
 #     fechaHoy=datetime.now()
 #     try:
