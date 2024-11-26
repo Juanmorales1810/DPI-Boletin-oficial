@@ -1,3 +1,4 @@
+import { usePostSubirArchivoBoletinMutation } from "@/store/apiSlice";
 import { pdfSchema } from "@/validations/validationFile";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cargarBoletin } from "@/store/appSilce";
@@ -7,21 +8,19 @@ import { UploadIcon } from "./icons";
 import Loader from "./ui/loader";
 import { useState } from "react";
 import { toast } from "sonner";
+import { BoletinOficialState } from "@/store/appSilce";
 
 interface SubirArchivoProps {
-    checkbox?: boolean;
-    apiSlice?: any;
     label?: string;
     id: string;
     disabled?: boolean;
-    nombreSA: string;
-    pathArchivo?: string;
+    boletin: BoletinOficialState;
 }
 
 export default function SubirArchivo(props: SubirArchivoProps) {
-    const { checkbox, apiSlice, label, id, disabled, nombreSA, pathArchivo } =
-        props;
+    const { label, id, disabled, boletin } = props;
     const [isloading, setIsLoading] = useState(false);
+    const [PostArchivo] = usePostSubirArchivoBoletinMutation();
 
     const dispatch = useDispatch();
 
@@ -39,13 +38,17 @@ export default function SubirArchivo(props: SubirArchivoProps) {
     const onSubmit = handleSubmit(async (data) => {
         const formData = new FormData();
         formData.append("file", data[`dropzonefile-${id}`][0]);
+        formData.append("titulo", boletin.titulo || "unnombre");
+        formData.append("descripcion", boletin.descripcion || "unmail@mail.com");
+        formData.append("tipoPublicacion", boletin.tipoPublicacion || "notificaciones");
+        formData.append("tipoActividad", boletin.tipoActividad || "Minera");
+        formData.append("duracionPublicacion", boletin.duracionPublicacion?.toString() || "4");
 
         setIsLoading(true);
 
         try {
-            const response = await apiSlice({
+            const response = await PostArchivo({
                 formData,
-                nombreSA,
             }).unwrap();
             console.log("Desde el envio: ", response);
             if (response?.message)
@@ -55,7 +58,7 @@ export default function SubirArchivo(props: SubirArchivoProps) {
                         padding: "16px",
                     },
                 });
-            dispatch(cargarBoletin({ ...response.sa }));
+            dispatch(cargarBoletin({ ...response }));
         } catch (error: any) {
             console.error("Error en el envio: ", error);
             const errorMessage =
@@ -71,67 +74,84 @@ export default function SubirArchivo(props: SubirArchivoProps) {
     });
 
     return (
-        <form onSubmit={onSubmit} className="flex justify-center items-center gap-5  py-8">
-            {label && <p className="font-bold text-sm">{label}</p>}
-            <div className="flex justify-center items-center gap-5 ">
-                <label
-                    htmlFor={`dropzonefile-${id}`}
-                    className="flex justify-center items-center rounded-md border-none bg-naranjaPrincipal text-white cursor-pointer shadow-md"
-                >
-                    <div className="flex justify-center items-center px-4 py-1 gap-2 ">
-                        <UploadIcon />
-                        <p className="text-sm text-left">
-                            <span className="textSpan">
-                                {disabled ? "Archivo cargado" : "Subir archivo"}
-                            </span>
-                        </p>
+        <form onSubmit={onSubmit} className="flex justify-center items-center gap-5 py-8">
+            <div className="flex justify-center items-center bg-white w-full max-w-2xl h-40 rounded-lg shadow-md">
+                {label && <p className="font-bold text-sm">{label}</p>}
+                <div className="flex flex-col justify-center items-center gap-5 ">
+                    <div className="flex justify-center items-center space-x-4">
+                        <div className="space-y-1">
+                            <label
+                                htmlFor={`dropzonefile-${id}`}
+                                className="flex justify-center items-center rounded-md border-none bg-naranjaPrincipal text-white cursor-pointer shadow-md"
+                            >
+                                <div className="flex justify-center items-center px-4 py-2 gap-2 ">
+                                    <UploadIcon />
+                                    <p className="text-sm text-left">
+                                        <span className="textSpan">
+                                            {disabled ? "Archivo cargado" : "Subir archivo"}
+                                        </span>
+                                    </p>
+                                </div>
+                                <input
+                                    id={`dropzonefile-${id}`}
+                                    type="file"
+                                    disabled={disabled}
+                                    className="hidden"
+                                    {...register(`dropzonefile-${id}`)}
+                                />
+                                {watch(`dropzonefile-${id}`) && (
+                                    <p className="text-xs pr-4">
+                                        {watch(`dropzonefile-${id}`)[0]?.name}
+                                    </p>
+                                )}
+                            </label>
+                            {errors[`dropzonefile-${id}`] && (
+                                <p className="text-xs text-destructive">
+                                    {errors[`dropzonefile-${id}`]?.message?.toString()}
+                                </p>
+                            )}
+                        </div>
+                        {isloading ? (
+                            <Loader />
+                        ) : !(watchDropzonefile?.length > 0) ? null : (
+                            <button
+                                disabled={!(watchDropzonefile?.length > 0)}
+                                className="bg-gris80 text-white px-4 py-2 rounded-md"
+                                type="submit"
+                            >
+                                Calcular
+                            </button>
+                        )}
                     </div>
-                    <input
-                        id={`dropzonefile-${id}`}
-                        type="file"
-                        disabled={disabled}
-                        className="hidden"
-                        {...register(`dropzonefile-${id}`)}
-                    />
-                    {watch(`dropzonefile-${id}`) && (
-                        <p className="text1">
-                            {watch(`dropzonefile-${id}`)[0]?.name}
-                        </p>
-                    )}
-                </label>
-                {pathArchivo && (
-                    <a
-                        href={`http://localhost:8000/${pathArchivo}`}
-                        target="_blank"
-                        className="text-naranjaPrincipal"
-                    >
-                        Ver Archivo
-                    </a>
-                )}
-                {pathArchivo && (
-                    <p
-                        className="bg-gris50 px-4 py-2 rounded-md text-center"
-                    >
-                        valor: $ 1000
-                    </p>
-                )}
+                    <div className="flex justify-center items-center space-x-4">
+                        {boletin.pathArchivo && (
+                            <a
+                                href={`http://localhost:8000/${boletin.pathArchivo}`}
+                                target="_blank"
+                                className="text-naranjaPrincipal"
+                            >
+                                Ver Archivo
+                            </a>
+                        )}
+                        {boletin.pathArchivo && (
+                            <p
+                                className="bg-gris50 px-4 py-2 rounded-md text-center"
+                            >
+                                valor: $ {boletin.precio}
+                            </p>
+                        )}
+                        {
+                            boletin.pathArchivo && (
+                                <button
+                                    className="bg-naranjaPrincipal text-white px-4 py-2 rounded-md"
+                                >
+                                    Aceptar
+                                </button>
+                            )
+                        }
+                    </div>
+                </div>
             </div>
-            {errors[`dropzonefile-${id}`] && (
-                <p className="textError">
-                    {errors[`dropzonefile-${id}`]?.message?.toString()}
-                </p>
-            )}
-            {isloading ? (
-                <Loader />
-            ) : !(!checkbox && watchDropzonefile?.length > 0) ? null : (
-                <button
-                    disabled={!(!checkbox && watchDropzonefile?.length > 0)}
-                    className="sendButton"
-                    type="submit"
-                >
-                    Enviar
-                </button>
-            )}
         </form>
     );
 }
