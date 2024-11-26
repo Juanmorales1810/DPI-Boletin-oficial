@@ -12,11 +12,8 @@ export default function Carga() {
             {boletin.tipoPublicacion === "notificaciones" ? (
                 <SubirArchivo
                     disabled={false}
-                    id="acta_constitutiva"
-                    checkbox={false}
-                    // apiSlice={postArchivo}
-                    nombreSA={"nombreSA"}
-                    pathArchivo={"archivo?.path_arch"}
+                    id="SubirArchivo"
+                    boletin={boletin}
                 />
             ) : (
                 <TextEditor />
