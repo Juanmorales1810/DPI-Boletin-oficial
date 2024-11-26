@@ -152,6 +152,7 @@ export default function TextEditor() {
     const onSubmit = async () => {
         const data = {
             ...boletin,
+            id: null,
             contenido: editorInstanceRef.current?.getHTML(),
             precio: count * 8,
             fechaPublicacion: new Date(boletin.fechaPublicacion),
@@ -166,7 +167,7 @@ export default function TextEditor() {
                     padding: "16px",
                 },
             });
-            dispatch(cargarBoletin({ ...response.sa }));
+            dispatch(cargarBoletin({ ...response }));
             router.push("/");
         } catch (error: any) {
             console.error("Error en el envio: ", error);
