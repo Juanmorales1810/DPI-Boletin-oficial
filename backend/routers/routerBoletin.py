@@ -5,7 +5,7 @@ from typing import Annotated, Optional
 from pathlib import Path
 import os
 
-from models.modelBO import Boletin, BoletinCreate
+from models.modelBO import Boletin, BoletinCreate, BoletinRead, BoletinesRead
 from config.db import engine
 from queries.queryBO import *
 
@@ -20,17 +20,15 @@ def get_session(): #get_session es una funcion que devuelve una sesion de la bas
 SessionDep= Annotated[Session, Depends(get_session)] #SessionDep es un alias para Depends(get_session), donde Depends es una funcion de FastAPI que permite inyectar dependencias en las rutas
 
 
-@routerBO.post("/crear-boletin")
+@routerBO.post("/crear-boletin", response_model=BoletinRead) #al crear el boletin, deberia retornar el precio? misma pregunta cuando subo un archivo
 async def crearBoletin(boletinData: BoletinCreate, session: SessionDep):
-    try:
-        boletinRefrescado= await subir_boletin(boletinData, session)
-    except Exception as e:
-        session.rollback() #si ocurre un error, se deshacen los cambios
-        raise HTTPException(status_code=400, detail=e)
+    boletinRefrescado= await subir_boletin(boletinData, session)
+    if not boletinRefrescado:
+        raise HTTPException(status_code=400, detail="No se pudo crear el boletin")
     
     return boletinRefrescado
 
-@routerBO.get("/buscador-publicaciones")
+@routerBO.get("/buscador-publicaciones", response_model=BoletinesRead)
 async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: list[str]=Query(None), titulo: Optional[str]=Query(None), fechaInicio: Optional[str]=Query(None), page: int=Query(1, ge=1), pageSize: int=Query(10, ge=1, le=15)):
     busquedas, total= await buscar_mas_tipos(session, tipoPublicacion, titulo, fechaInicio, page, pageSize)
     if not busquedas:
@@ -51,7 +49,7 @@ async def descargar_pdf(html: str):
         return {"error": str(e)}
     
 
-@routerBO.post("/subir-archivo-boletin")
+@routerBO.post("/subir-archivo-boletin", response_model=BoletinRead)
 async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descripcion:str= Form(...), tipoActividad:str=Form(...), tipoPublicacion: str=Form(...), duracionPublicacion: int=Form(...),file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
@@ -93,7 +91,7 @@ def obtener_archivo(nombreSA: str, nombrepdf: str): #aca tendria que estar el no
     return FileResponse(path=str(file_path), media_type='application/pdf', filename=file_path.name, headers={"Content-Disposition": f'inline; filename="{file_path.name}"'})
 
 
-@routerBO.get("/obtener-boletin/{id}")
+@routerBO.get("/obtener-boletin/{id}", response_model=BoletinRead)
 async def obtenerBoletin(id:int, session: SessionDep):
     boletin= await buscar_boletin_por_id(session, id)
     if not boletin:
