@@ -87,7 +87,7 @@ export default function TextEditor() {
                     FontSizeTextStyle,
                     FontFamily,
                 ],
-                content: '<p>Este es el contenido inicial del editor.</p>',
+                content: '<p></p>',
                 editorProps: {
                     attributes: {
                         class: 'format lg:format-lg dark:format-invert focus:outline-none format-blue max-w-none',
