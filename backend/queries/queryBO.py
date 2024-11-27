@@ -11,16 +11,18 @@ from pathlib import Path
 import bleach
 
 from models.modelBO import Boletin, BoletinCreate
-from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS
+from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS, css_sanitizer
 
 
 async def subir_boletin(boletinData: BoletinCreate, session: Session):
+    htmlSanitizado=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES) #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
+    cssSanitizado=css_sanitizer.sanitize(htmlSanitizado) #sanitizacion de css, se limpia el contenido de css para evitar ataques XSS
     boletin=Boletin(
         titulo=boletinData.titulo,
         descripcion=boletinData.descripcion,
         tipoPublicacion=boletinData.tipoPublicacion,
         tipoActividad=boletinData.tipoActividad,
-        contenido=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES), #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
+        contenido=cssSanitizado, #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
         precio=boletinData.precio,
         duracionPublicacion=boletinData.duracionPublicacion,
         fecha=datetime.now(),

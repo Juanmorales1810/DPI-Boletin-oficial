@@ -1,3 +1,5 @@
+from bleach.css_sanitizer import CSSSanitizer
+
 ALLOWED_TAGS = [
     'b', 'i', 'u', 'a', 'p', 'strong', 'em',
     'h1', 'h2', 'h3', 'h4', 'h5', 'h6',  # Headers
@@ -17,3 +19,10 @@ ALLOWED_ATTRIBUTES = {
     'div': ['class'],
     'p': ['class']
 }
+
+css_sanitizer = CSSSanitizer(
+    allowed_css_properties=[
+        "font-size", "color", "background-color", "font-weight", "font-style",
+        "text-decoration", "text-align", "margin", "padding", "border",
+    ]
+)
