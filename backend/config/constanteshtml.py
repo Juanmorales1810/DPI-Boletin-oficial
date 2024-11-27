@@ -10,6 +10,7 @@ ALLOWED_TAGS = [
 ]
 
 ALLOWED_ATTRIBUTES = {
+    "*": ["style"],
     'a': ['href', 'title', 'rel'],
     'img': ['src', 'alt'],
     'span': ['class'],
