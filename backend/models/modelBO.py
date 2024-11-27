@@ -27,12 +27,14 @@ class BoletinCreate(BaseModel):
     duracionPublicacion: int
 
 class BoletinRead(BaseModel):
+    id: int
     titulo: str
     descripcion: str
     tipoPublicacion: str
     tipoActividad: str
     contenido: str
     duracionPublicacion: int
+    fecha: datetime
 
 class BoletinesRead(BaseModel):
     boletines: list[BoletinRead]
