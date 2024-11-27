@@ -2,6 +2,7 @@
 import { useGetBoletinPorIDQuery } from "@/store/apiSlice";
 import Loader from "./ui/loader";
 import { Printer } from "lucide-react";
+import { Button } from "./ui/button";
 
 interface ContentProps {
     id: string;
@@ -26,10 +27,12 @@ export default function Content(props: ContentProps) {
                 </p>
             </div>
             <div className="flex justify-between items-center w-full max-w-2xl bg-naranjaPrincipal px-4 py-3 rounded-lg">
-                <p className="text-sm font-semibold text-white">Publicado el {new Date(data.fechaPublicacion).toLocaleDateString()}</p>
+                <p className="text-sm font-semibold text-white">Publicado el {new Date(data.fecha).toLocaleDateString()}</p>
                 <div>
                     {!data.nombre_archivo ? (
-                        <a href={data.path_archivo} target="_blank" rel="noreferrer" className="text-white"><Printer /></a>
+                        <Button asChild variant="outline" className="bg-naranjaPrincipal hover:bg-white">
+                            <a href={data.path_archivo} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
+                        </Button>
                     ) : null}
                 </div>
             </div>
