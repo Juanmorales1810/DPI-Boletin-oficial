@@ -8,7 +8,8 @@ ALLOWED_TAGS = [
     'ul', 'ol', 'li',                    # Lists
     'br',                                # Line breaks
     'img',                               # Images (since you have img attributes)
-    'table', 'thead', 'tbody', 'tr', 'th', 'td'  # Tables
+    'table', 'thead', 'tbody', 'tr', 'th', 'td' # Tables
+
 ]
 
 ALLOWED_ATTRIBUTES = {

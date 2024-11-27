@@ -15,14 +15,17 @@ from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS, css_sanitize
 
 
 async def subir_boletin(boletinData: BoletinCreate, session: Session):
-    htmlSanitizado=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES) #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
-    cssSanitizado=css_sanitizer.sanitize(htmlSanitizado) #sanitizacion de css, se limpia el contenido de css para evitar ataques XSS
+    #print(f"HTML como viene: {boletinData.contenido}")
+    htmlSanitizado=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, css_sanitizer=css_sanitizer) #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
+    #print(f"HTML sanitizado: {htmlSanitizado}")
+    # cssSanitizado=css_sanitizer.sanitize_css(htmlSanitizado) #sanitizacion de css, se limpia el contenido de css para evitar ataques XSS
+    # print(f"CSS sanitizado: {cssSanitizado}")
     boletin=Boletin(
         titulo=boletinData.titulo,
         descripcion=boletinData.descripcion,
         tipoPublicacion=boletinData.tipoPublicacion,
         tipoActividad=boletinData.tipoActividad,
-        contenido=cssSanitizado, #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
+        contenido=htmlSanitizado, #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
         precio=boletinData.precio,
         duracionPublicacion=boletinData.duracionPublicacion,
         fecha=datetime.now(),
