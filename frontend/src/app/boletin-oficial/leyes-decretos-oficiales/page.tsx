@@ -82,12 +82,12 @@ export default function LegislacionAvisosOficiales() {
                             loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
                                 <ul>
                                     {data?.boletines.map((item: BoletinOficialState) => (
-                                        <a key={item.id} href={`/boletin-oficial/leyes-decretos-oficiales/${item.id}/${item.titulo}/${item.fecha.substring(0, 10)}`}>
+                                        <Link key={item.id} href={`/boletin-oficial/leyes-decretos-oficiales/${item.id}/${item.titulo}/${item.fecha.substring(0, 10)}`}>
                                             <li className="mb-4 px-4 h-20 flex flex-col justify-center items-start border-2 shadow-md rounded-xl bg-white hover:border-naranjaPrincipal transition-colors">
                                                 <h3 className="text-lg font-bold">{item.titulo}</h3>
                                                 <p>{item.fecha.substring(0, 10)}</p>
                                             </li>
-                                        </a>
+                                        </Link>
                                     ))}
                                 </ul>
                     }
