@@ -54,16 +54,13 @@ async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descr
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
 
-    rutaArch= await crear_directorio(file)
 
-    archivo={
-        "nombre": file.filename,
-        "path": rutaArch
-    }
     boletin=Boletin(titulo=titulo, descripcion=descripcion, tipoActividad=tipoActividad, contenido="", tipoPublicacion=tipoPublicacion, precio=0, duracionPublicacion=duracionPublicacion, nombreArchivo="", pathArchivo="") #por el momento precio esta en 0 ya que eso lo tengo que calcular luego
     textoExtraido, contador= await extraer_texto_pdf(file)
     precioFinal= await calcular_pdf(contador)
-    boletinRefrescado= await subir_archivo(session, boletin, archivo, textoExtraido, precioFinal)
+    boletinRefrescado= await subir_archivo(session, boletin, file, textoExtraido, precioFinal)
+
+    await crear_directorio(file, boletinRefrescado.nombreArchivo)
 
     return boletinRefrescado
 
@@ -80,10 +77,10 @@ async def calcularPrecioPDF(file: UploadFile=File(...)):
     return {"textoExtraido": textoExtraido, "contadorPalabras": contador, "precioFinal": precioFinal}
 
 
-@routerBO.get("/archivos/{nombreSA}/{path_padre}/{nombrepdf}")
-def obtener_archivo(nombreSA: str, nombrepdf: str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
-    base_path = Path(os.getenv("RUTA_DIRECTORIO"))
-    file_path = base_path / nombreSA / nombrepdf
+@routerBO.get("/acceder-archivo/{nombrepdf}")
+def obtener_archivo(nombrepdf: str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
+    base_path = Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
+    file_path = base_path / nombrepdf
 
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
