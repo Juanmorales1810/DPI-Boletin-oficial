@@ -124,16 +124,16 @@ export default function SubirArchivo(props: SubirArchivoProps) {
                         )}
                     </div>
                     <div className="flex justify-center items-center space-x-4">
-                        {boletin.pathArchivo && (
+                        {boletin.nombreArchivo && (
                             <a
-                                href={`http://localhost:8000/${boletin.pathArchivo}`}
+                                href={`http://localhost:8000/archivos/boletines/${boletin.nombreArchivo.substring(2, 80)}/${boletin.id}`}
                                 target="_blank"
                                 className="text-naranjaPrincipal"
                             >
                                 Ver Archivo
                             </a>
                         )}
-                        {boletin.pathArchivo && (
+                        {boletin.nombreArchivo && (
                             <p
                                 className="bg-gris50 px-4 py-2 rounded-md text-center"
                             >
@@ -141,7 +141,7 @@ export default function SubirArchivo(props: SubirArchivoProps) {
                             </p>
                         )}
                         {
-                            boletin.pathArchivo && (
+                            boletin.nombreArchivo && (
                                 <button
                                     className="bg-naranjaPrincipal text-white px-4 py-2 rounded-md"
                                 >
