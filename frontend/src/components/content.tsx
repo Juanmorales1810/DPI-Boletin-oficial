@@ -1,8 +1,9 @@
 "use client";
 import { useGetBoletinPorIDQuery } from "@/store/apiSlice";
-import Loader from "./ui/loader";
-import { Printer } from "lucide-react";
+import { ChevronLeft, Printer } from "lucide-react";
+import { useRouter } from 'next/navigation';
 import { Button } from "./ui/button";
+import Loader from "./ui/loader";
 
 interface ContentProps {
     id: string;
@@ -11,6 +12,7 @@ interface ContentProps {
 export default function Content(props: ContentProps) {
     const { id } = props;
     const { data, isLoading, error } = useGetBoletinPorIDQuery({ id: id[0] });
+    const router = useRouter();
 
     if (isLoading) return <Loader />;
     if (error) return <p>Ocurrió un error al cargar los datos.</p>;
@@ -26,12 +28,16 @@ export default function Content(props: ContentProps) {
                     {data.descripcion}
                 </p>
             </div>
-            <div className="flex justify-between items-center w-full max-w-2xl bg-naranjaPrincipal px-4 py-3 rounded-lg">
+            <div className=" sticky top-20 flex justify-between items-center w-full max-w-2xl bg-naranjaPrincipal px-4 py-3 rounded-lg">
                 <p className="text-sm font-semibold text-white">Publicado el {new Date(data.fecha).toLocaleDateString()}</p>
-                <div>
+                <div className="flex justify-center items-center gap-4 ">
+                    <Button variant={"link"} onClick={() => router.back()} className="text-white">
+                        <ChevronLeft />
+                        Volver
+                    </Button>
                     {!data.nombre_archivo ? (
                         <Button asChild variant="outline" className="bg-naranjaPrincipal hover:bg-white">
-                            <a href={data.path_archivo} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
+                            <a href={data.path_archivo || "https://contenido.sanjuan.gob.ar/media/k2/attachments/(11)_(NOVIEMBRE)_26-11-2024__(P._68_Internet.pdf"} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
                         </Button>
                     ) : null}
                 </div>
