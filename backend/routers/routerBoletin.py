@@ -77,10 +77,10 @@ async def calcularPrecioPDF(file: UploadFile=File(...)):
     return {"textoExtraido": textoExtraido, "contadorPalabras": contador, "precioFinal": precioFinal}
 
 
-@routerBO.get("/acceder-archivo/{nombrepdf}")
-def obtener_archivo(nombrepdf: str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
+@routerBO.get("/acceder-archivo/{nombrepdf}/{id}")
+def obtener_archivo(nombrepdf: str, id:str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
     base_path = Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
-    file_path = base_path / nombrepdf
+    file_path = base_path / f"{id}_{nombrepdf}"
 
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
