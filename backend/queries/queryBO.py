@@ -15,11 +15,8 @@ from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS, css_sanitize
 
 
 async def subir_boletin(boletinData: BoletinCreate, session: Session):
-    #print(f"HTML como viene: {boletinData.contenido}")
     htmlSanitizado=bleach.clean(boletinData.contenido, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRIBUTES, css_sanitizer=css_sanitizer) #sanitizacion de html, se limpia el contenido de html para evitar ataques XSS
-    #print(f"HTML sanitizado: {htmlSanitizado}")
-    # cssSanitizado=css_sanitizer.sanitize_css(htmlSanitizado) #sanitizacion de css, se limpia el contenido de css para evitar ataques XSS
-    # print(f"CSS sanitizado: {cssSanitizado}")
+
     boletin=Boletin(
         titulo=boletinData.titulo,
         descripcion=boletinData.descripcion,
@@ -78,9 +75,9 @@ def html_a_pdf(html: str) -> BytesIO:
     return pdf
 
 
-async def subir_archivo(session: Session, boletin: Boletin, archivo: dict, contenido: str, precioFinal: float):
-    boletin.nombreArchivo=str(archivo.get("nombre")) #.get es un metodo de diccionarios que permite obtener el valor de una clave, si la clave no existe, devuelve None
-    boletin.pathArchivo=str(archivo.get("path"))
+async def subir_archivo(session: Session, boletin: Boletin, archivo: UploadFile, contenido: str, precioFinal: float):
+    #boletin.nombreArchivo=str(archivo.filename) #.get es un metodo de diccionarios que permite obtener el valor de una clave, si la clave no existe, devuelve None
+    #boletin.pathArchivo=str(crear_path(archivo))
     boletin.fecha=datetime.now()
     boletin.fechaPublicacion=datetime.now()
     boletin.contenido=contenido
@@ -89,10 +86,52 @@ async def subir_archivo(session: Session, boletin: Boletin, archivo: dict, conte
         session.add(boletin)
         session.commit()
         session.refresh(boletin)
+
+        boletin.nombreArchivo=f"{boletin.id}_{archivo.filename}"
+        boletin.pathArchivo=str(await crear_path(boletin.nombreArchivo))
+        session.add(boletin)
+        session.commit()
+        session.refresh(boletin)
     except Exception as e:
         session.rollback()
         raise e
     return boletin
+
+
+async def crear_path(nombreArch:str):
+    rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
+    rutaArch= rutaDirec / nombreArch
+
+    return rutaArch
+
+async def crear_directorio(archivo: UploadFile, nombreArch:str):
+    try:
+        rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
+        rutaArch= rutaDirec / nombreArch
+        
+        rutaDirec.mkdir(parents=True, exist_ok=True)
+
+        with rutaArch.open("wb") as f:
+            content= await archivo.read()
+            f.write(content)
+        #archivo.file.seek(0)#seek es un metodo de Python que mueve el cursor al inicio del archivo, lo hice ya que al leer el archivo aca, luego quedaba inutilizable para la siguiente funcnion en el router
+
+    except Exception as e:
+        print(f"Error al crear el directorio: {e}")
+        raise
+    return rutaArch
+
+
+async def buscar_boletin_por_id(session: Session, id: int):
+    try:
+        query=select(Boletin).where(Boletin.id==id)
+        boletin= session.exec(query).first()
+
+    except Exception as e:
+        session.rollback()
+
+    return boletin
+
 
 async def extraer_texto_pdf(file: UploadFile):
     contenidoPDF=await file.read()
@@ -113,33 +152,7 @@ async def calcular_pdf(contador:int):
     return precio
 
 
-async def crear_directorio(archivo: UploadFile):
-    try:
-        rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
-        rutaArch= rutaDirec / archivo.filename
-        
-        rutaDirec.mkdir(parents=True, exist_ok=True)
 
-        with rutaArch.open("wb") as f:
-            content= await archivo.read()
-            f.write(content)
-        archivo.file.seek(0)#seek es un metodo de Python que mueve el cursor al inicio del archivo, lo hice ya que al leer el archivo aca, luego quedaba inutilizable para la siguiente funcnion en el router
-
-    except Exception as e:
-        print(f"Error al crear el directorio: {e}")
-        raise
-    return rutaArch
-
-
-async def buscar_boletin_por_id(session: Session, id: int):
-    try:
-        query=select(Boletin).where(Boletin.id==id)
-        boletin= session.exec(query).first()
-
-    except Exception as e:
-        session.rollback()
-
-    return boletin
 
 
 # async def buscar_boletines(session: Session, tipoPublicacion: str):
