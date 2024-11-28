@@ -20,8 +20,8 @@ export default function LegislacionAvisosOficiales() {
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [isActive, setIsActive] = useState(false);
     const [tipoBoletin, setTipoBoletin] = useState({
-        leyes: true,
-        decretos: true,
+        leyes: false,
+        decretos: false,
     });
     //feacha actual
     const today = new Date();
