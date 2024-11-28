@@ -49,7 +49,7 @@ async def descargar_pdf(html: str):
         return {"error": str(e)}
     
 
-@routerBO.post("/subir-archivo-boletin", response_model=BoletinRead)
+@routerBO.post("/subir-archivo-boletin")
 async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descripcion:str= Form(...), tipoActividad:str=Form(...), tipoPublicacion: str=Form(...), duracionPublicacion: int=Form(...),file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
