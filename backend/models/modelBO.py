@@ -35,6 +35,7 @@ class BoletinRead(BaseModel):
     contenido: str
     duracionPublicacion: int
     fecha: datetime
+    nombreArchivo: str | None
 
 class BoletinesRead(BaseModel):
     boletines: list[BoletinRead]
