@@ -111,6 +111,8 @@ async def crear_directorio(archivo: UploadFile, nombreArch:str):
         
         rutaDirec.mkdir(parents=True, exist_ok=True)
 
+        await archivo.seek(0)
+
         with rutaArch.open("wb") as f:
             content= await archivo.read()
             f.write(content)
