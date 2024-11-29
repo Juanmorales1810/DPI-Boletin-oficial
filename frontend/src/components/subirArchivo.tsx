@@ -126,7 +126,7 @@ export default function SubirArchivo(props: SubirArchivoProps) {
                     <div className="flex justify-center items-center space-x-4">
                         {boletin.nombreArchivo && (
                             <a
-                                href={`http://localhost:8000/archivos/boletines/${boletin.nombreArchivo.substring(2, 80)}/${boletin.id}`}
+                                href={`http://localhost:8000/archivos/boletines/${boletin.id}/${boletin.nombreArchivo.substring(2)}`}
                                 target="_blank"
                                 className="text-naranjaPrincipal"
                             >
