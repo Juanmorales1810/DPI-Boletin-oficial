@@ -98,7 +98,7 @@ async def subir_archivo(session: Session, boletin: Boletin, archivo: UploadFile,
         session.commit()
         session.refresh(boletin)
 
-        boletin.nombreArchivo=f"{boletin.id}_{archivo.filename}"
+        boletin.nombreArchivo=f"{boletin.id}_boletin.pdf"
         boletin.pathArchivo=str(await crear_path(boletin.nombreArchivo))
         session.add(boletin)
         session.commit()
