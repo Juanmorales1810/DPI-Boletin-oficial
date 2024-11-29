@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { boletinSchema } from "@/validations/boletinvalidation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
@@ -17,10 +11,10 @@ import { Input } from "@/components/ui/input";
 import { useRouter } from 'next/navigation';
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
+import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useState } from "react";
 
 export default function Home() {
   const dispatch = useDispatch();
