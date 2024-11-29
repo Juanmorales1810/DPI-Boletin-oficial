@@ -9,6 +9,8 @@ from pypdf import PdfReader
 import os
 from pathlib import Path
 import bleach
+import inspect
+
 
 from models.modelBO import Boletin, BoletinCreate
 from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS, css_sanitizer
@@ -49,7 +51,7 @@ async def cargar_pdf(session:Session, archivo: BytesIO, boletin: Boletin):
     except Exception as e:
         session.rollback()
         raise e
-    crear_directorio(archivo, boletin.nombreArchivo)
+    await crear_directorio(archivo, boletin.nombreArchivo)
 
     return boletin
     
@@ -113,20 +115,30 @@ async def crear_path(nombreArch:str):
 
     return rutaArch
 
-async def crear_directorio(archivo: UploadFile, nombreArch:str):
+async def crear_directorio(archivo, nombreArch:str):
     try:
         rutaDirec= Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
         rutaArch= rutaDirec / nombreArch
         
         rutaDirec.mkdir(parents=True, exist_ok=True)
+            # Verificar si archivo.read() es una función asíncrona o síncrona
+        read_method = archivo.read
+        if inspect.iscoroutinefunction(read_method):
+            content = await read_method()
+        else:
+            content = read_method()
 
-
+        archivo.seek(0)
         with rutaArch.open("wb") as f:
-            if isinstance(archivo, UploadFile):
-                content= await archivo.read()
-            else:
-                content= archivo.read()
             f.write(content)
+
+        # with rutaArch.open("wb") as f:
+        #     content= await archivo.read()
+        #     # if isinstance(archivo, UploadFile):
+        #     #     content= await archivo.read()
+        #     # else:
+        #     #     content= archivo.read()
+        #     f.write(content)
         #archivo.file.seek(0)#seek es un metodo de Python que mueve el cursor al inicio del archivo, lo hice ya que al leer el archivo aca, luego quedaba inutilizable para la siguiente funcnion en el router
 
     except Exception as e:
