@@ -37,7 +37,7 @@ export default function Navbar() {
                     <NavigationMenu>
                         <NavigationMenuList>
                             <NavigationMenuItem>
-                                <NavigationMenuTrigger className='hover:text-naranjaPrincipal'>Boletín Oficial</NavigationMenuTrigger>
+                                <NavigationMenuTrigger className='text-grisPrincipal font-semibold hover:text-naranjaPrincipal'>Boletín Oficial</NavigationMenuTrigger>
                                 <NavigationMenuContent>
                                     <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                         {linksBoletin.map((item) => (
@@ -51,7 +51,7 @@ export default function Navbar() {
                                 </NavigationMenuContent>
                             </NavigationMenuItem>
                             <NavigationMenuItem>
-                                <NavigationMenuTrigger className='hover:text-naranjaPrincipal'>Publicar</NavigationMenuTrigger>
+                                <NavigationMenuTrigger className='text-grisPrincipal font-semibold hover:text-naranjaPrincipal'>Publicar</NavigationMenuTrigger>
                                 <NavigationMenuContent>
                                     <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                                         {linksCrear.map((item) => (
