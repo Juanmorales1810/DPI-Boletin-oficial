@@ -20,15 +20,19 @@ def get_session(): #get_session es una funcion que devuelve una sesion de la bas
 SessionDep= Annotated[Session, Depends(get_session)] #SessionDep es un alias para Depends(get_session), donde Depends es una funcion de FastAPI que permite inyectar dependencias en las rutas
 
 
-@routerBO.post("/crear-boletin", response_model=BoletinRead) #al crear el boletin, deberia retornar el precio? misma pregunta cuando subo un archivo
+@routerBO.post("/crear-boletin/", response_model=BoletinRead) #al crear el boletin, deberia retornar el precio? misma pregunta cuando subo un archivo
 async def crearBoletin(boletinData: BoletinCreate, session: SessionDep):
     boletinRefrescado= await subir_boletin(boletinData, session)
     if not boletinRefrescado:
         raise HTTPException(status_code=400, detail="No se pudo crear el boletin")
-    
-    return boletinRefrescado
+    pdf= html_a_pdf(boletinRefrescado.contenido)
 
-@routerBO.get("/buscador-publicaciones", response_model=BoletinesRead)
+    boletinFinal= await cargar_pdf(session, pdf, boletinRefrescado)
+    await crear_directorio(pdf, boletinRefrescado.nombreArchivo)
+    
+    return boletinFinal
+
+@routerBO.get("/buscador-publicaciones/", response_model=BoletinesRead)
 async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: list[str]=Query(None), titulo: Optional[str]=Query(None), fechaInicio: Optional[str]=Query(None), page: int=Query(1, ge=1), pageSize: int=Query(10, ge=1, le=15)):
     busquedas, total= await buscar_mas_tipos(session, tipoPublicacion, titulo, fechaInicio, page, pageSize)
     if not busquedas:
@@ -37,19 +41,19 @@ async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: li
     return {"boletines": busquedas, "contador": total}
 
 
-@routerBO.post("/descargar-pdf/")
-async def descargar_pdf(html: str):
-    try:
-        pdf = html_a_pdf(html)
-        headers = {
-            "Content-Disposition": "attachment; filename=boletin_oficial.pdf"
-        } #Content-Disposition es una cabecera HTTP que indica si el contenido debe ser mostrado en el navegador o descargado como un archivo adjunto
-        return Response(content=pdf.read(), media_type="application/pdf", headers=headers) #Response es una clase de FastAPI que permite devolver una respuesta HTTP personalizada, el content tiene el contenido del archivo, media_type es el tipo de archivo y headers son las cabeceras HTTP
-    except Exception as e:
-        return {"error": str(e)}
+# @routerBO.post("/descargar-pdf/")
+# async def descargar_pdf(html: str):
+#     try:
+#         pdf = html_a_pdf(html)
+#         headers = {
+#             "Content-Disposition": "attachment; filename=boletin_oficial.pdf"
+#         } #Content-Disposition es una cabecera HTTP que indica si el contenido debe ser mostrado en el navegador o descargado como un archivo adjunto
+#         return Response(content=pdf.read(), media_type="application/pdf", headers=headers) #Response es una clase de FastAPI que permite devolver una respuesta HTTP personalizada, el content tiene el contenido del archivo, media_type es el tipo de archivo y headers son las cabeceras HTTP
+#     except Exception as e:
+#         return {"error": str(e)}
     
 
-@routerBO.post("/subir-archivo-boletin")
+@routerBO.post("/subir-archivo-boletin/")
 async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descripcion:str= Form(...), tipoActividad:str=Form(...), tipoPublicacion: str=Form(...), duracionPublicacion: int=Form(...),file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
@@ -65,7 +69,7 @@ async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descr
     return boletinRefrescado
 
 
-@routerBO.post("/calcular-precio-pdf")
+@routerBO.post("/calcular-precio-pdf/")
 async def calcularPrecioPDF(file: UploadFile=File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
@@ -77,10 +81,10 @@ async def calcularPrecioPDF(file: UploadFile=File(...)):
     return {"textoExtraido": textoExtraido, "contadorPalabras": contador, "precioFinal": precioFinal}
 
 
-@routerBO.get("/archivos/boletines/{id}/{nombrepdf}")
-def obtener_archivo(id:str, nombrepdf: str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
+@routerBO.get("/archivos/boletines/{id}/")
+def obtener_archivo(id:str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
     base_path = Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
-    file_path = base_path / f"{id}_{nombrepdf}"
+    file_path = base_path / f"{id}_boletin.pdf"
 
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Archivo no encontrado")
