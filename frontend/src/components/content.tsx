@@ -17,6 +17,9 @@ export default function Content(props: ContentProps) {
     if (isLoading) return <Loader />;
     if (error) return <p>Ocurrió un error al cargar los datos.</p>;
 
+    console.log(data);
+
+
     return (
         <div className="flex flex-col justify-center items-center">
             <div className="w-full mx-auto mb-6 text-center md:w-2/3">
@@ -35,11 +38,13 @@ export default function Content(props: ContentProps) {
                         <ChevronLeft />
                         Volver
                     </Button>
-                    {!data.nombre_archivo ? (
-                        <Button asChild variant="outline" className="bg-naranjaPrincipal hover:bg-white">
-                            <a href={data.path_archivo || "https://contenido.sanjuan.gob.ar/media/k2/attachments/(11)_(NOVIEMBRE)_26-11-2024__(P._68_Internet.pdf"} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
-                        </Button>
-                    ) : null}
+                    {data.nombreArchivo
+                        ? (
+                            <Button asChild variant="outline" className="bg-naranjaPrincipal hover:bg-white">
+                                <a href={`http://localhost:8000/archivos/boletines/${data?.id}/${data?.nombreArchivo
+                                    .substring(2)}` || ""} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
+                            </Button>
+                        ) : null}
                 </div>
             </div>
             {data && data.contenido ? (
