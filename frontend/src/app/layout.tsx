@@ -25,7 +25,6 @@ export const metadata: Metadata = {
     icon: "/logo-san-juan.svg",
     apple: "/logo-san-juan.svg",
   },
-  manifest: "/manifest.json",
   creator: "Juan Morales",
   openGraph: {
     title: "Boletín Oficial",
