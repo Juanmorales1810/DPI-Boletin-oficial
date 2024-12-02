@@ -1,16 +1,16 @@
 "use client";
 
+import { useState, useMemo, SetStateAction } from "react";
+import { BoletinOficialState } from "@/store/appSilce";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
+import Pagination from "@/components/ui/pagination";
 import { BuscarIcon } from "@/components/icons";
 import { Input } from '@/components/ui/input';
-import { es } from 'date-fns/locale';
-import { useState, useMemo, SetStateAction } from "react";
-import useSWR from "swr";
 import Loader from "@/components/ui/loader";
-import Pagination from "@/components/ui/pagination";
+import { es } from 'date-fns/locale';
 import Link from "next/link";
-import { BoletinOficialState } from "@/store/appSilce";
+import useSWR from "swr";
 
 const fetcher = (...args: [RequestInfo, RequestInit]): Promise<any> => fetch(...args).then((res) => res.json());
 
