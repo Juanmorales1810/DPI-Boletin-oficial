@@ -41,8 +41,7 @@ export default function Content(props: ContentProps) {
                     {data.nombreArchivo
                         ? (
                             <Button asChild variant="outline" className="bg-naranjaPrincipal hover:bg-white">
-                                <a href={`http://localhost:8000/archivos/boletines/${data?.id}/${data?.nombreArchivo
-                                    .substring(2)}` || ""} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
+                                <a href={`http://localhost:8000/archivos/boletines/${data?.id}` || ""} target="_blank" rel="noreferrer" className="text-white cursor-pointer"><Printer /></a>
                             </Button>
                         ) : null}
                 </div>
