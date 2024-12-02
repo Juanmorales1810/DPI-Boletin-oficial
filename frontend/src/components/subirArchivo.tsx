@@ -1,5 +1,6 @@
 import { usePostSubirArchivoBoletinMutation } from "@/store/apiSlice";
 import { pdfSchema } from "@/validations/validationFile";
+import { BoletinOficialState } from "@/store/appSilce";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cargarBoletin } from "@/store/appSilce";
 import { useForm } from "react-hook-form";
@@ -8,7 +9,8 @@ import { UploadIcon } from "./icons";
 import Loader from "./ui/loader";
 import { useState } from "react";
 import { toast } from "sonner";
-import { BoletinOficialState } from "@/store/appSilce";
+import { Button } from "./ui/button";
+import Link from "next/link";
 
 interface SubirArchivoProps {
     label?: string;
@@ -142,11 +144,13 @@ export default function SubirArchivo(props: SubirArchivoProps) {
                         )}
                         {
                             boletin.nombreArchivo && (
-                                <button
+                                <Button asChild
                                     className="bg-naranjaPrincipal text-white px-4 py-2 rounded-md"
                                 >
-                                    Aceptar
-                                </button>
+                                    <Link href="/">
+                                        Aceptar
+                                    </Link>
+                                </Button>
                             )
                         }
                     </div>
