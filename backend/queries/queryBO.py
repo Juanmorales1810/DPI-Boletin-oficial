@@ -9,7 +9,8 @@ from pypdf import PdfReader
 import os
 from pathlib import Path
 import bleach
-import inspect
+import inspect #es para ver si una funcion es asincrona o no
+from sqlalchemy import or_
 
 
 from models.modelBO import Boletin, BoletinCreate
@@ -171,8 +172,9 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
         if tipoPublicacion:
             query = query.where(Boletin.tipoPublicacion.in_(tipoPublicacion))
         if tituloBO:
-            query = query.where(Boletin.titulo.like(f"%{tituloBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
-
+            query= query.where(or_(Boletin.titulo.like(f"%{tituloBO}%"), Boletin.contenido.like(f"%{tituloBO}%")))
+            # query = query.where(Boletin.titulo.like(f"%{tituloBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
+            # query= query.where(Boletin.contenido.like(f"%{tituloBO}%"))
         total_query = select(func.count()).select_from(query.subquery())  # func.count() es una funcion de SQL que cuenta el numero de filas que cumple con la condicion pero sin la paginacion. select_from es un metodo de SQLModel que selecciona las filas de una tabla, en este caso, de la subconsulta que se hace con query.subquery(), una subconsulta se hace para no afectar a la consulta principal
         total = session.exec(total_query).one() #ejecuta la consulta y devuelve el resultado, en este caso, el numero de filas que cumple con la condicion y espera un unico resultado
             
