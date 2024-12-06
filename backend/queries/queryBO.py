@@ -177,7 +177,7 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
         total = session.exec(total_query).one() #ejecuta la consulta y devuelve el resultado, en este caso, el numero de filas que cumple con la condicion y espera un unico resultado
             
         query = query.order_by(Boletin.fechaPublicacion.desc()) #ordena los boletines por fecha de publicacion de manera descendente
-        query = query.offset((page - 1) * pageSize).limit(pageSize)
+        query = query.offset((page - 1) * pageSize).limit(pageSize) # offset es un metodo de SQLModel que permite saltar un numero de filas y limit es un metodo de SQLModel que limita el numero de filas que se devuelven
 
         result = session.exec(query).all() #ejecuta toda la consulta y devuelve una lista con los resultados? Si, gracias al .all()
         
