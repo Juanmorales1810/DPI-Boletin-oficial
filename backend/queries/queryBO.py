@@ -170,7 +170,7 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
             finDia=fechaConvertida.replace(hour=23, minute=59, second=59, microsecond=999999)# a la fecha convertida, se le asigna el horario de fin de dia
             query= query.where(Boletin.fechaPublicacion.between(inicioDia, finDia)) #selecciona los boletines que se publicaron entre el inicio y fin del dia. Between es un metodo de SQLModel que permite seleccionar los valores que estan entre dos valores, equivale a usar el operador >= y <=
         if tipoPublicacion:
-            query = query.where(Boletin.tipoPublicacion.in_(tipoPublicacion))
+            query = query.where(Boletin.tipoPublicacion.in_(tipoPublicacion)) #Como tipoPublicacion es una lista, el in_ lo uso para que se fije si el boletin de la base de datos esta en esa lista
         if tituloBO:
             query= query.where(or_(Boletin.titulo.like(f"%{tituloBO}%"), Boletin.contenido.like(f"%{tituloBO}%")))
             # query = query.where(Boletin.titulo.like(f"%{tituloBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
