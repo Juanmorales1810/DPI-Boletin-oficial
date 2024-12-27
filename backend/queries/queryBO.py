@@ -47,10 +47,10 @@ async def cargar_pdf(session:Session, archivo: BytesIO, boletin: Boletin):
         boletin.nombreArchivo=f"{boletin.id}_boletin.pdf" #.name es un atributo de BytesIO que devuelve el nombre del archivo por ejemplo, si el archivo es "hola.pdf", devuelve "hola.pdf" y es diferente a .filename solo porque no es una instancia de UploadFile
         boletin.pathArchivo=str(await crear_path(boletin.nombreArchivo))
         session.add(boletin)
-        session.commit()
-        session.refresh(boletin)
+        await session.commit()
+        await session.refresh(boletin)
     except Exception as e:
-        session.rollback()
+        await session.rollback()
         raise e
     await crear_directorio(archivo, boletin.nombreArchivo)
 
@@ -88,24 +88,22 @@ def html_a_pdf(html: str) -> BytesIO:
 
 
 async def subir_archivo(session: Session, boletin: Boletin, archivo: UploadFile, contenido: str, precioFinal: float):
-    #boletin.nombreArchivo=str(archivo.filename) #.get es un metodo de diccionarios que permite obtener el valor de una clave, si la clave no existe, devuelve None
-    #boletin.pathArchivo=str(crear_path(archivo))
     boletin.fecha=datetime.now()
     boletin.fechaPublicacion=datetime.now()
     boletin.contenido=contenido
     boletin.precio=precioFinal
     try:
         session.add(boletin)
-        session.commit()
-        session.refresh(boletin)
+        await session.commit()
+        await session.refresh(boletin)
 
         boletin.nombreArchivo=f"{boletin.id}_boletin.pdf"
         boletin.pathArchivo=str(await crear_path(boletin.nombreArchivo))
         session.add(boletin)
-        session.commit()
-        session.refresh(boletin)
+        await session.commit()
+        await session.refresh(boletin)
     except Exception as e:
-        session.rollback()
+        await session.rollback()
         raise e
     return boletin
 
@@ -176,16 +174,17 @@ async def buscar_mas_tipos(session: Session, tipoPublicacion: Optional[list[str]
             # query = query.where(Boletin.titulo.like(f"%{tituloBO}%")) # con el metodo like, puedo buscar parcialmente la palabra, por ejemplo de Juan, busco ju y me devuelve de la db quien se llame Juan
             # query= query.where(Boletin.contenido.like(f"%{tituloBO}%"))
         total_query = select(func.count()).select_from(query.subquery())  # func.count() es una funcion de SQL que cuenta el numero de filas que cumple con la condicion pero sin la paginacion. select_from es un metodo de SQLModel que selecciona las filas de una tabla, en este caso, de la subconsulta que se hace con query.subquery(), una subconsulta se hace para no afectar a la consulta principal
-        total = session.exec(total_query).one() #ejecuta la consulta y devuelve el resultado, en este caso, el numero de filas que cumple con la condicion y espera un unico resultado
-            
+        total_result = await session.execute(total_query) #ejecuta la consulta y devuelve el resultado, en este caso, el numero de filas que cumple con la condicion y espera un unico resultado
+        total= total_result.scalar_one()
+
         query = query.order_by(Boletin.fechaPublicacion.desc()) #ordena los boletines por fecha de publicacion de manera descendente
         query = query.offset((page - 1) * pageSize).limit(pageSize) # offset es un metodo de SQLModel que permite saltar un numero de filas y limit es un metodo de SQLModel que limita el numero de filas que se devuelven
 
-        result = session.exec(query).all() #ejecuta toda la consulta y devuelve una lista con los resultados? Si, gracias al .all()
-        
-        return result, total #result es del tipo list[Boletin] que es una lista de objetos de la clase Boletin
+        result = await session.execute(query) #ejecuta toda la consulta y devuelve una lista con los resultados? Si, gracias al .all()
+        boletines= result.scalars().all()
+        return boletines, total #result es del tipo list[Boletin] que es una lista de objetos de la clase Boletin
     except Exception as e:
-        session.rollback()
+        await session.rollback()
         raise e
 
 
