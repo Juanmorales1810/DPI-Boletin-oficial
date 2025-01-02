@@ -82,7 +82,7 @@ async def calcularPrecioPDF(file: UploadFile=File(...)):
 
 
 @routerBO.get("/archivos/boletines/{id}/")
-def obtener_archivo(id:str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
+async def obtener_archivo(id:str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
     base_path = Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
     file_path = base_path / f"{id}_boletin.pdf"
 
