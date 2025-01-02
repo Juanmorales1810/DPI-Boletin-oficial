@@ -131,15 +131,6 @@ async def crear_directorio(archivo, nombreArch:str):
         with rutaArch.open("wb") as f:
             f.write(content)
 
-        # with rutaArch.open("wb") as f:
-        #     content= await archivo.read()
-        #     # if isinstance(archivo, UploadFile):
-        #     #     content= await archivo.read()
-        #     # else:
-        #     #     content= archivo.read()
-        #     f.write(content)
-        #archivo.file.seek(0)#seek es un metodo de Python que mueve el cursor al inicio del archivo, lo hice ya que al leer el archivo aca, luego quedaba inutilizable para la siguiente funcnion en el router
-
     except Exception as e:
         print(f"Error al crear el directorio: {e}")
         raise
@@ -147,12 +138,15 @@ async def crear_directorio(archivo, nombreArch:str):
 
 
 async def buscar_boletin_por_id(session: Session, id: int):
+    boletin= None
     try:
         query=select(Boletin).where(Boletin.id==id)
-        boletin= session.exec(query).first()
+        result= await session.execute(query)
+        boletin= result.scalar_one_or_none() #scalar_one es un metodo de SQLModel que devuelve un unico resultado, si no hay resultados, lanza una excepcion y scalar_one_or_none es un metodo de SQLModel que devuelve un unico resultado, si no hay resultados, devuelve None
 
     except Exception as e:
-        session.rollback()
+        await session.rollback()
+        raise e
 
     return boletin
 
