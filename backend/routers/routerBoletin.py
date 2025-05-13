@@ -1,14 +1,25 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form
-from fastapi.responses import JSONResponse, Response, FileResponse
-from sqlmodel import Session
-from typing import Annotated, Optional
-from pathlib import Path
 import os
+from pathlib import Path
+from typing import Annotated, Optional
 
-from models.modelBO import Boletin, BoletinCreate, BoletinRead, BoletinesRead
 from config.db import get_session
-from queries.queryBO import *
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi.responses import FileResponse
+from models.modelBO import Boletin, BoletinCreate, BoletinesRead, BoletinRead
 
+# from queries.queryBO import * no es buena practica esto, creo
+from queries.queryBO import (
+    buscar_boletin_por_id,
+    buscar_mas_tipos,
+    calcular_pdf,
+    cargar_pdf,
+    crear_directorio,
+    extraer_texto_pdf,
+    html_a_pdf,
+    subir_archivo,
+    subir_boletin,
+)
+from sqlmodel import Session
 
 routerBO = APIRouter(tags=["Operaciones Boletin Oficial"])
 

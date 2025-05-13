@@ -1,20 +1,19 @@
-from sqlmodel import Session, select, extract, or_
-from datetime import datetime
-from typing import Optional
-from sqlalchemy.sql import func
-from io import BytesIO
-from xhtml2pdf import pisa
-from fastapi import UploadFile
-from pypdf import PdfReader
+import inspect  #es para ver si una funcion es asincrona o no
 import os
+from datetime import datetime
+from io import BytesIO
 from pathlib import Path
+from typing import Optional
+
 import bleach
-import inspect #es para ver si una funcion es asincrona o no
-from sqlalchemy import or_
-
-
-from models.modelBO import Boletin, BoletinCreate
 from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS, css_sanitizer
+from fastapi import UploadFile
+from models.modelBO import Boletin, BoletinCreate
+from pypdf import PdfReader
+from sqlalchemy import or_
+from sqlalchemy.sql import func
+from sqlmodel import Session, extract, or_, select
+from xhtml2pdf import pisa
 
 
 async def subir_boletin(boletinData: BoletinCreate, session: Session):
