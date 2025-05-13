@@ -2,9 +2,9 @@ import { z } from "zod";
 
 const typeBoletin = [
     "Ley",
-    "Decretos",
-    "Normas",
-    "Ordenanzas",
+    "Decreto",
+    "Norma",
+    "Ordenanza",
     "Notificaciones",
     "Licitaciones",
     "Convocatorias",
@@ -15,9 +15,9 @@ export type TypeBoletin = (typeof typeBoletin)[number];
 
 export const mappedBoletin: { [key in TypeBoletin]: string } = {
     Ley: "Leyes",
-    Decretos: "Decretos",
-    Normas: "Normas",
-    Ordenanzas: "Ordenanzas",
+    Decreto: "Decreto",
+    Norma: "Normas",
+    Ordenanza: "Ordenanzas",
     Notificaciones: "Notificaciones(edictos)",
     Licitaciones: "Licitaciones",
     Convocatorias: "Convocatorias",
