@@ -6,16 +6,16 @@ from pathlib import Path
 import os
 
 from models.modelBO import Boletin, BoletinCreate, BoletinRead, BoletinesRead
-from config.db import engine
+from config.db import get_session
 from queries.queryBO import *
 
 
 routerBO = APIRouter(tags=["Operaciones Boletin Oficial"])
 
 
-def get_session(): #get_session es una funcion que devuelve una sesion de la base de datos
-    with Session(engine) as session:
-        yield session 
+# def get_session(): #get_session es una funcion que devuelve una sesion de la base de datos
+#     with Session(engine) as session:
+#         yield session 
 
 SessionDep= Annotated[Session, Depends(get_session)] #SessionDep es un alias para Depends(get_session), donde Depends es una funcion de FastAPI que permite inyectar dependencias en las rutas
 
@@ -37,7 +37,7 @@ async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: li
     busquedas, total= await buscar_mas_tipos(session, tipoPublicacion, titulo, fechaInicio, page, pageSize)
     if not busquedas:
         raise HTTPException(status_code=404, detail="No se encontraron boletines")
-    #total= len(busquedas)
+    
     return {"boletines": busquedas, "contador": total}
 
 
@@ -53,7 +53,7 @@ async def obtenerMasDeUnTipoPublicacion(session: SessionDep, tipoPublicacion: li
 #         return {"error": str(e)}
     
 
-@routerBO.post("/subir-archivo-boletin/")
+@routerBO.post("/subir-archivo-boletin/") #funciona, pero igual verificar mas el async
 async def subirArchivoBoletin(session: SessionDep, titulo:str = Form(...), descripcion:str= Form(...), tipoActividad:str=Form(...), tipoPublicacion: str=Form(...), duracionPublicacion: int=Form(...),file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="El archivo debe ser un PDF")
@@ -82,7 +82,7 @@ async def calcularPrecioPDF(file: UploadFile=File(...)):
 
 
 @routerBO.get("/archivos/boletines/{id}/")
-def obtener_archivo(id:str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
+async def obtener_archivo(id:str): #aca tendria que estar el nombreSA/acta-constitutiva/pdf
     base_path = Path(os.getenv("RUTA_DIRECTORIO")) / "boletines"
     file_path = base_path / f"{id}_boletin.pdf"
 
