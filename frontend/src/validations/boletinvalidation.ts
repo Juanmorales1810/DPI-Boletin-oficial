@@ -2,26 +2,26 @@ import { z } from "zod";
 
 const typeBoletin = [
     "Ley",
-    "decretos",
-    "normas",
-    "ordenanzas",
-    "notificaciones",
-    "licitaciones",
-    "convocatorias",
-    "otro",
+    "Decretos",
+    "Normas",
+    "Ordenanzas",
+    "Notificaciones",
+    "Licitaciones",
+    "Convocatorias",
+    "Otro",
 ] as const;
 
 export type TypeBoletin = (typeof typeBoletin)[number];
 
 export const mappedBoletin: { [key in TypeBoletin]: string } = {
     Ley: "Leyes",
-    decretos: "Decretos",
-    normas: "Normas",
-    ordenanzas: "Ordenanzas",
-    notificaciones: "Notificaciones(edictos)",
-    licitaciones: "Licitaciones",
-    convocatorias: "Convocatorias",
-    otro: "Otro",
+    Decretos: "Decretos",
+    Normas: "Normas",
+    Ordenanzas: "Ordenanzas",
+    Notificaciones: "Notificaciones(edictos)",
+    Licitaciones: "Licitaciones",
+    Convocatorias: "Convocatorias",
+    Otro: "Otro",
 };
 const typeActividad = [
     "Minera",
