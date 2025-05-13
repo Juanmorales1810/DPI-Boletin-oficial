@@ -158,13 +158,13 @@ export default function Home() {
                                                     <SelectItem value="Ley">
                                                         Leyes
                                                     </SelectItem>
-                                                    <SelectItem value="Decretos">
+                                                    <SelectItem value="Decreto">
                                                         Decretos
                                                     </SelectItem>
-                                                    <SelectItem value="Normas">
+                                                    <SelectItem value="Norma">
                                                         Normas
                                                     </SelectItem>
-                                                    <SelectItem value="Ordenanzas">
+                                                    <SelectItem value="Ordenanza">
                                                         Ordenanzas
                                                     </SelectItem>
                                                     <SelectItem value="Notificaciones">
