@@ -20,8 +20,8 @@ export default function LegislacionAvisosOficiales() {
     const [date, setDate] = useState<Date | undefined>(new Date())
     const [isActive, setIsActive] = useState(false);
     const [tipoBoletin, setTipoBoletin] = useState({
-        leyes: false,
-        decretos: false,
+        leyes: true,
+        decretos: true,
     });
     //feacha actual
     const today = new Date();
@@ -30,7 +30,7 @@ export default function LegislacionAvisosOficiales() {
     //convertir fecha en formato yyyy-mm-dd
     const dateBuscar = date ? date.toISOString().split('T')[0] : '';
 
-    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones?page=${page}${tipoBoletin.leyes ? "&tipoPublicacion=Ley" : ""}${tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&nombre=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}&pageSize=4`, fetcher, {
+    const { data, isLoading } = useSWR(`http://localhost:8000/buscador-publicaciones/?page=${page}${!tipoBoletin.leyes ? "&tipoPublicacion=Ley" : ""}${!tipoBoletin.decretos ? "&tipoPublicacion=Decreto" : ""}${searchTerm !== "" ? `&titulo=${searchTerm}` : ""}&fechaInicio=${isActive ? dateBuscar : ""}${tipoBoletin.decretos && tipoBoletin.leyes ? "&tipoPublicacion=Ley&tipoPublicacion=Decreto" : ""}&pageSize=4`, fetcher, {
         keepPreviousData: true,
     });
 
@@ -45,6 +45,47 @@ export default function LegislacionAvisosOficiales() {
     const handleDaySelect = (day: SetStateAction<Date | undefined>) => {
         setIsActive(!!day);
         setDate(day);
+    };
+
+    interface DataResponse {
+        contador: number;
+        boletines: BoletinOficialState[];
+        detail?: string;
+    }
+
+    const filteredData = (data as DataResponse)?.boletines?.filter((item: BoletinOficialState) =>
+        item.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.contenido.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+
+    interface HighlightTextProps {
+        text: string;
+        highlight: string;
+    }
+
+    const highlightText = ({ text, highlight }: HighlightTextProps): (string | JSX.Element)[] => {
+        const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
+        return parts.map((part, index) =>
+            part.toLowerCase() === highlight.toLowerCase() ? <mark className="bg-naranjaPrincipal text-white" key={index}>{part}</mark> : part
+        );
+    };
+
+    const truncateHTML = (html: string, highlight: string, maxLength: number): string => {
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const text = div.textContent || div.innerText || '';
+        const index = text.toLowerCase().indexOf(highlight.toLowerCase());
+
+        if (index === -1) {
+            return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+        }
+
+        const start = Math.max(0, index - Math.floor(maxLength / 2));
+        const end = Math.min(text.length, start + maxLength);
+        const truncated = text.substring(start, end);
+
+        return (start > 0 ? '...' : '') + truncated + (end < text.length ? '...' : '');
     };
 
     return (
@@ -81,11 +122,12 @@ export default function LegislacionAvisosOficiales() {
                         loadingState === "loading" ? <Loader /> :
                             loadingState === "idle" && data.detail ? <p>No se encontraron Boletines</p> :
                                 <ul>
-                                    {data?.boletines.map((item: BoletinOficialState) => (
+                                    {filteredData.map((item: BoletinOficialState) => (
                                         <Link key={item.id} href={`/boletin-oficial/leyes-decretos-oficiales/${item.id}/${item.titulo}/${item.fecha.substring(0, 10)}`}>
                                             <li className="mb-4 px-4 h-20 flex flex-col justify-center items-start border-2 shadow-md rounded-xl bg-white hover:border-naranjaPrincipal transition-colors">
-                                                <h3 className="text-lg font-bold">{item.titulo}</h3>
-                                                <p>{item.fecha.substring(0, 10)}</p>
+                                                <h3 className="text-lg font-bold">{highlightText({ text: item.titulo, highlight: searchTerm })}</h3>
+                                                <p className="px-1 text-gris80">{highlightText({ text: truncateHTML(item.contenido, searchTerm, 100), highlight: searchTerm })}</p>
+                                                <p className="px-1 text-gris80">{item.fecha.substring(0, 10)}</p>
                                             </li>
                                         </Link>
                                     ))}
@@ -118,7 +160,7 @@ export default function LegislacionAvisosOficiales() {
                     <div className="flex items-center space-x-2 py-2">
                         <Checkbox
                             id="leyes"
-                            checked={tipoBoletin.leyes}
+                            checked={!tipoBoletin.leyes}
                             onCheckedChange={() => setTipoBoletin({ ...tipoBoletin, leyes: !tipoBoletin.leyes })}
                         />
                         <label
@@ -131,7 +173,7 @@ export default function LegislacionAvisosOficiales() {
                     <div className="flex items-center space-x-2 py-2">
                         <Checkbox
                             id="decretos"
-                            checked={tipoBoletin.decretos}
+                            checked={!tipoBoletin.decretos}
                             onCheckedChange={() => setTipoBoletin({ ...tipoBoletin, decretos: !tipoBoletin.decretos })}
                         />
                         <label
