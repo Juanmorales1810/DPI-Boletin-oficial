@@ -10,7 +10,7 @@ from config.constanteshtml import ALLOWED_ATTRIBUTES, ALLOWED_TAGS, css_sanitize
 from fastapi import UploadFile
 from models.modelBO import Boletin, BoletinCreate
 from pypdf import PdfReader
-from sqlalchemy import or_
+# from sqlalchemy import or_
 from sqlalchemy.sql import func
 from sqlmodel import Session, extract, or_, select
 from xhtml2pdf import pisa
